@@ -45,5 +45,6 @@ cCode = []
 # 변환 알고리즘 - Cengine, Pyengine 연계
 for i in range(0, len(araCode)):
     print(araCode[i].strip("\n"))
+    # 여기부터 변환 시작 - 한 줄 한 줄 변환
 
 f.close() # 194
