@@ -99,3 +99,4 @@ except Exception as e:
 
 print("[+] 변환 완료 파일이 다음 위치에 저장되었습니다 : " + outfile)
 print("[+] 즐거운 프로그래밍 되세요!")
+sys.exit(1)
