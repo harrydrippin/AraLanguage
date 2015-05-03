@@ -7,19 +7,18 @@ __author__ = 'Seunghwan Hong'
  )
 
 p = optparse.OptionParser()
+usage = "%prog -i [아라 파일] -o [출력될 파일 경로] (-c, -p, -b)"
+
+p.set_usage(usage)
 
 # 본 파일과 변환된 파일의 경로를 지정
-p.add_option("-i", action="store", dest="infile")
-p.add_option("--input", action="store", dest="infile")
-p.add_option("-o", action="store", dest="outfile")
-p.add_option("--outfile", action="store", dest="outfile")
+p.add_option("-i", "--infile", action="store", help="작성하신 아라 파일의 경로", dest="infile", metavar="[아라 파일]")
+p.add_option("-o", "--outfile", action="store", help="변환된 파일의 경로 (확장자는 자동으로 정해집니다)", dest="outfile", metavar="[출력될 파일 경로]")
 
 # 변환할 언어를 지정
-p.add_option("-c", action="store_const", const=1, dest="lang")
-p.add_option("-p", action="store_const", const=2, dest="lang")
-p.add_option("--py", action="store_const",const=2,  dest="lang")
-p.add_option("-b", action="store_const",const=3,  dest="lang")
-p.add_option("--both", action="store_const",const=3,  dest="lang")
+p.add_option("-c", action="store_const", const=1, help="C로 변환합니다. -p와 함께 쓰실 수 없습니다. (-b 참조)", dest="lang")
+p.add_option("-p", "--python", action="store_const", help="Python으로 변환합니다. -c와 함께 쓰실 수 없습니다. (-b 참조)", const=2, dest="lang")
+p.add_option("-b", "--both", action="store_const", help="C와 Python 모두로 변환합니다. -c나 -p와 함께 쓰실 수 없습니다.", const=3,  dest="lang")
 
 # 옵션 파싱 및 변수 설정
 opts, args = p.parse_args()
