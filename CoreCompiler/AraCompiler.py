@@ -71,21 +71,19 @@ except Exception as e:
 print("[+] 변환을 성공적으로 끝마쳤습니다!")
 
 # 변환 완료된 파일을 저장
+print("[+] 파일을 저장합니다...")
 try:
     if(lang == "py" or lang == "python"):
-        print("Python 파일 저장")
         f = open(outfile + "/" + os.path.basename(infile).strip(".ara") + ".py", "w")
         for i in range (0, len(pyCode) - 1) :
             f.write(pyCode[i])
         f.close()
     elif(lang == "c"):
-        print("C 파일 저장")
         f = open(outfile + "/" + os.path.basename(infile).strip(".ara") + ".c", "w")
         for i in range (0, len(cCode) - 1) :
             f.write(cCode[i])
         f.close()
     else:
-        print("모든 파일 저장")
         f = open(outfile + "/" + os.path.basename(infile).strip(".ara") + ".py", "w")
         for i in range (0, len(pyCode) - 1) :
             f.write(pyCode[i])
@@ -101,4 +99,3 @@ except Exception as e:
 
 print("[+] 변환 완료 파일이 다음 위치에 저장되었습니다 : " + outfile)
 print("[+] 즐거운 프로그래밍 되세요!")
-
