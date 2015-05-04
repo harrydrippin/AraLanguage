@@ -41,6 +41,12 @@ print("[+] 아라 파일 읽기에 성공했습니다 : " + infile)
 # 아라 코드 읽어서 리스트로 저장
 araCode = f.readlines()
 
+if "".join(araCode[-1:]).find("아라") == -1:
+    print("[-] 정상적인 아라 파일이 아닙니다! 파일 하단에 \"아라\" 문자열을 넣으셨습니까?")
+    sys.exit(9)
+else:
+    araCode.pop()
+
 # 변환 완료 소스 리스트 준비
 pyCode = []
 cCode = []

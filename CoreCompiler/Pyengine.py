@@ -13,11 +13,10 @@ def convert(araCode):
         # 들여쓰기에 대한 처리
         indent = data.count("\t")
 
-        # 한글로 된 사칙 연산 정의
-        data = data.replace("더하기", "+").replace("빼기", "-").replace("나누기", "/").replace("곱하기", "*").replace("나머지", "%")
-
         # 명령문 검출 방식 정의
         r_push = data.find("넣기")
+        r_operator = "".join(data.split()[-1:]).find("더하기") + "".join(data.split()[-1:]).find("빼기") +\
+                    "".join(data.split()[-1:]).find("곱하기") + "".join(data.split()[-1:]).find("나누기")
         r_print = data.find("출력하기")
         r_repeatNum = data.find("번 반복하기")
         r_repeatForever = data.find("무한 반복하기")
@@ -26,9 +25,12 @@ def convert(araCode):
         r_elif = data.find("그렇지 않고 만약")
         r_else = data.find("그렇지 않으면")
 
-        # 검출된 명령문을 if-elif-else로 찾아서 런타임 절약
+        # 검출된 명령문을 if-elif-else로 찾음
         if r_push != -1:
             a = data.replace("에 ", " = ").replace("을 넣기", "").replace("를 넣기", "")
+            result.append(a)
+        elif r_operator != -4:
+            a = op_processor(data, indent)
             result.append(a)
         elif r_print != -1:
             a = data.replace("을 출력하기", '').replace("를 출력하기", '').replace("\n", '')
@@ -52,12 +54,27 @@ def convert(araCode):
             result.append(a)
         else:
             result.append(data)
+
+        # 한글로 된 사칙 연산 정의
+        result[-1:] = "".join(result[-1:]).replace("더하기", "+").replace("빼기", "-").replace("나누기", "/").replace("곱하기", "*").replace("나머지", "%")
+    return result
+
+# 연산문 처리 함수
+def op_processor(data, indent):
+    data = data.split()  # (변수)[에/에서] (값)[을/를] [더하기/빼기/곱하기/나누기]
+
+    data[0] = data[0].replace("에서", "").replace("에", "")
+    data[1] = data[1].replace("을", "").replace("를", "")
+    data[2] = data[2].replace("더하기", "+=").replace("빼기", "-=").replace("곱하기", "*=").replace("나누기", "/=")
+
+    result = ("\t" * indent) + data[0] + " " + data[2] + " " + data[1] + "\n"
     return result
 
 # if 문 처리 함수
 def if_processor(data, indent):
     data = data.split()
 
+    # elif 구분용 카운터
     i = 0
 
     if data[0].find("그렇지") != -1:
