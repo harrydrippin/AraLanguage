@@ -4,7 +4,6 @@ __author__ = 'Seunghwan Hong'
 
 def convert(araCode):
     result = []
-    loop_count = 0
     result.append("# 이 파일은 한글 프로그래밍 언어, 아라(Ara)에 의하여 작성되어진 Python 파일입니다.\n")
     result.append("# This file has been made by Ara, constructed by Korean language, Hangeul.\n")
     result.append("# 만들어진 시각 : " + datetime.today().strftime("%Y년 %m월 %d일 %H시 %M분 %S초\n\n"))
@@ -40,8 +39,7 @@ def convert(araCode):
             result.append(b)
         elif r_repeatNum != -1:
             a = data.replace("번 반복하기", "").replace("\t", "").replace("\n", "")
-            b = ("\t" * indent) + "__loopcnt" + str(loop_count) + " = 0\n" + ("\t" * indent) + "while __loopcnt" + str(loop_count) + " < " + a + "\n" + ("\t" * indent) + "\t__loopcnt" + str(loop_count) + " = __loopcnt" + str(loop_count) + " + 1\n"
-            loop_count += 1
+            b = ("\t" * indent) + loopcnt(indent) + " = 0\n" + ("\t" * indent) + "while " + loopcnt(indent) + " < " + a + "\n" + ("\t" * indent) + "\t" + loopcnt(indent) + " = " + loopcnt(indent) + " + 1\n"
             result.append(b)
         elif r_repeatForever != -1:
             a = data.replace("무한 반복하기", "while True")
@@ -106,6 +104,26 @@ def if_processor(data, indent):
         result = ("\t" * indent) + "if " + data[1] + " " + data[3] + " " + data[2] + ":\n"
 
     return result
+
+def loopcnt(indent):
+    if indent == 0:
+        return "i"
+    elif indent == 1:
+        return "j"
+    elif indent == 2:
+        return "k"
+    elif indent == 3:
+        return "l"
+    elif indent == 4:
+        return "m"
+    elif indent == 5:
+        return "n"
+    elif indent == 6:
+        return "o"
+    elif indent == 7:
+        return "p"
+    else:
+        return "__loopcnt" + str(indent)
 
 if __name__ == "__main__":
     import sys
