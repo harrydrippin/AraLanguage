@@ -23,6 +23,8 @@ def convert(araCode):
         r_repeatForever = data.find("무한 반복하기")
         r_stopRepeat = data.find("반복 그만하기")
         r_if = data.find("만약")
+        r_elif = data.find("그렇지 않고 만약")
+        r_else = data.find("그렇지 않으면")
 
         # 검출된 명령문을 if-elif-else로 찾아서 런타임 절약
         if r_push != -1:
@@ -42,34 +44,47 @@ def convert(araCode):
         elif r_stopRepeat != -1:
             a = data.replace("반복 그만하기", "break")
             result.append(a)
-        elif r_if != -1:
+        elif r_if != -1 or r_elif != -1:
             a = if_processor(data, indent)
+            result.append(a)
+        elif r_else != -1:
+            a = data.replace("그렇지 않으면", "else")
             result.append(a)
         else:
             result.append(data)
     return result
 
+# if 문 처리 함수
 def if_processor(data, indent):
     data = data.split()
 
+    i = 0
+
+    if data[0].find("그렇지") != -1:
+        i = 2
+
     # 변수
-    data[1] = data[1][:-1]
+    data[i + 1] = data[i + 1][:-1]
 
     # 값 (와, 과, 보다)
-    if data[2][-1:].find("와") >= 0:
-        data[2] = data[2][:-1]
-    elif data[2][-1:].find("과") >= 0:
-        data[2] = data[2][:-1]
-    elif data[2][-2:].find("보다") >= 0:
-        data[2] = data[2][:-2]
+    if data[i + 2][-1:].find("와") >= 0:
+        data[i + 2] = data[i + 2][:-1]
+    elif data[i + 2][-1:].find("과") >= 0:
+        data[i + 2] = data[i + 2][:-1]
+    elif data[i + 2][-2:].find("보다") >= 0:
+        data[i + 2] = data[i + 2][:-2]
     else:
         pass
 
     # (조건) (이, 으, 르)면
-    data[3] = data[3].replace(":", "").replace("이면", "").replace("으면", "").replace("르면", "").replace("면", "")
-    data[3] = data[3].replace("이상", ">=").replace("이하", "<=").replace("초과", ">").replace("크", ">").replace("미만", "<").replace("작", "<").replace("같", "==").replace("다", "!=")
+    data[i + 3] = data[i + 3].replace(":", "").replace("이면", "").replace("으면", "").replace("르면", "").replace("면", "")
+    data[i + 3] = data[i + 3].replace("이상", ">=").replace("이하", "<=").replace("초과", ">").replace("크", ">").replace("미만", "<").replace("작", "<").replace("같", "==").replace("다", "!=")
 
-    result = ("\t" * indent) + "if " + data[1] + " " + data[3] + " " + data[2] + ":\n"
+    if i == 2:
+        result = ("\t" * indent) + "elif " + data[i + 1] + " " + data[i + 3] + " " + data[i + 2] + ":\n"
+    else:
+        result = ("\t" * indent) + "if " + data[1] + " " + data[3] + " " + data[2] + ":\n"
+
     return result
 
 if __name__ == "__main__":
