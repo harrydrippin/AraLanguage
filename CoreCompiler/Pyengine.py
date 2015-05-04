@@ -10,8 +10,12 @@ def convert(araCode):
     for i in range(0, len(araCode)):
         data = araCode[i]
 
+        # TODO : 문자열("") 안에서 띄어쓰기를 할 때 그것을 기준으로 스플릿하여 해석하는 치명적인 버그가 존재 - 대안 필요("조사를 기준으로 나눠서 생각하기!"), 지금은 _ 치환으로 보완
+        # TODO : 반복문을 중첩했을 때 카운터 변수 i가 겹치는 치명적인 버그가 존재 - 대안 필요
+
         # 들여쓰기에 대한 처리
         indent = data.count("\t")
+        data = data.replace("_", " ")
 
         # 명령문 검출 방식 정의
         r_push = data.find("넣기")
@@ -27,7 +31,7 @@ def convert(araCode):
 
         # 검출된 명령문을 if-elif-else로 찾음
         if r_push != -1:
-            a = data.replace("에 ", " = ").replace("을 넣기", "").replace("를 넣기", "")
+            a = data.replace("에게 ", " = ").replace("에 ", " = ").replace("을 넣기", "").replace("를 넣기", "")
             result.append(a)
         elif r_operator != -4:
             a = op_processor(data, indent)
@@ -41,7 +45,7 @@ def convert(araCode):
             b = ("\t" * indent) + "i = 0\n" + ("\t" * indent) + "while i < " + a + "\n" + ("\t" * indent) + "\ti = i + 1\n"
             result.append(b)
         elif r_repeatForever != -1:
-            a = data.replace("무한 반복하기", "while true")
+            a = data.replace("무한 반복하기", "while 0 == 0")
             result.append(a)
         elif r_stopRepeat != -1:
             a = data.replace("반복 그만하기", "break")
@@ -63,7 +67,7 @@ def convert(araCode):
 def op_processor(data, indent):
     data = data.split()  # (변수)[에/에서] (값)[을/를] [더하기/빼기/곱하기/나누기]
 
-    data[0] = data[0].replace("에서", "").replace("에", "")
+    data[0] = data[0].replace("에서", "").replace("에게", "").replace("에", "")
     data[1] = data[1].replace("을", "").replace("를", "")
     data[2] = data[2].replace("더하기", "+=").replace("빼기", "-=").replace("곱하기", "*=").replace("나누기", "/=")
 

@@ -27,19 +27,18 @@ if len(sys.argv) != 7:
     print("[-] 인수가 잘못 설정되었습니다. 도움이 필요하시면 python AraCompiler.py -h를 참조하세요.")
     sys.exit(2)
 
-# 아라 파일 오픈 (.ara) 혹은 에러 출력 후 프로그램 종료
+# 아라 파일 오픈 (.ara) 혹은 인코딩 에러 catch 후 수정
 try:
     if ".ara" not in infile:
         raise Exception
-    f = open(infile, "rU")
-except Exception as e:
-    print("[-] 아라 파일을 해당 경로에서 찾을 수 없습니다. 확장자가 .ara인 파일까지의 경로를 작성해야 합니다.")
-    sys.exit(3)
+    f = open(infile, "rU", encoding="euc-kr")
+    araCode = f.readlines()
+except UnicodeDecodeError as e:
+    f.close()
+    f = open(infile, "rU", encoding="utf-8")
+    araCode = f.readlines()
 
 print("[+] 아라 파일 읽기에 성공했습니다 : " + infile)
-
-# 아라 코드 읽어서 리스트로 저장
-araCode = f.readlines()
 
 if "".join(araCode[-1:]).find("아라") == -1:
     print("[-] 정상적인 아라 파일이 아닙니다! 파일 하단에 \"아라\" 문자열을 넣으셨습니까?")
