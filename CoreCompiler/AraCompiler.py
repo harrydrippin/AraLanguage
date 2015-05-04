@@ -23,13 +23,13 @@ lang = opts.lang
 print("[*] 아라(Ara) : 한글을 사용하는 프로그래밍 언어\n[*] 작성자 : 홍승환, 최현우\n")
 
 # 인수가 잘못 설정되었을 때 프로그램 종료
-if(len(sys.argv) != 7):
+if len(sys.argv) != 7:
     print("[-] 인수가 잘못 설정되었습니다. 도움이 필요하시면 python AraCompiler.py -h를 참조하세요.")
     sys.exit(2)
 
 # 아라 파일 오픈 (.ara) 혹은 에러 출력 후 프로그램 종료
 try:
-    if(".ara" not in infile):
+    if ".ara" not in infile:
         raise Exception
     f = open(infile, "rU")
 except Exception as e:
@@ -53,11 +53,11 @@ cCode = []
 
 # 언어별로 변환 : 엔진 연계
 try:
-    if(lang == "py" or lang == "python"):
+    if lang == "py" or lang == "python":
         print("[+] Python으로 변환을 시작합니다...")
         import Pyengine as engine
         pyCode = engine.convert(araCode)
-    elif(lang == "c"):
+    elif lang == "c":
         print("[+] C로 변환을 시작합니다...")
         import Cengine as engine
         cCode = engine.convert(araCode)
@@ -69,8 +69,7 @@ try:
         cCode = ce.convert(araCode)
     f.close()
 except Exception as e:
-    print("[-] 예기치 못한 오류가 발생했습니다 : " + e)
-    print("[-] 다시 시도하시거나, 위 에러 내용을 문의해주세요.")
+    print("[-] 예기치 못한 오류가 발생했습니다. 다시 시도하시거나, 에러 내용을 문의해주세요.")
     sys.exit(4)
 
 # 변환 완료
@@ -79,28 +78,27 @@ print("[+] 변환을 성공적으로 끝마쳤습니다!")
 # 변환 완료된 파일을 저장
 print("[+] 파일을 저장합니다...")
 try:
-    if(lang == "py" or lang == "python"):
+    if lang == "py" or lang == "python":
         f = open(outfile + "/" + os.path.basename(infile).strip(".ara") + ".py", "w")
-        for i in range (0, len(pyCode) - 1) :
+        for i in range (0, len(pyCode) - 1):
             f.write(pyCode[i])
         f.close()
-    elif(lang == "c"):
+    elif lang == "c":
         f = open(outfile + "/" + os.path.basename(infile).strip(".ara") + ".c", "w")
-        for i in range (0, len(cCode) - 1) :
+        for i in range (0, len(cCode) - 1):
             f.write(cCode[i])
         f.close()
     else:
         f = open(outfile + "/" + os.path.basename(infile).strip(".ara") + ".py", "w")
-        for i in range (0, len(pyCode) - 1) :
+        for i in range (0, len(pyCode) - 1):
             f.write(pyCode[i])
         f.close()
         f = open(outfile + "/" + os.path.basename(infile).strip(".ara") + ".c", "w")
-        for i in range (0, len(cCode) - 1) :
+        for i in range (0, len(cCode) - 1):
             f.write(cCode[i])
         f.close()
 except Exception as e:
-    print("[-] 예기치 못한 오류가 발생했습니다 : " + e)
-    print("[-] 다시 시도하시거나, 위 에러 내용을 문의해주세요.")
+    print("[-] 예기치 못한 오류가 발생했습니다. 다시 시도하시거나, 에러 내용을 문의해주세요.")
     sys.exit(5)
 
 print("[+] 변환 완료 파일이 다음 위치에 저장되었습니다 : " + outfile)
