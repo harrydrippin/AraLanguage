@@ -38,7 +38,7 @@ except UnicodeDecodeError as e:
     f = open(infile, "rU", encoding="utf-8")
     araCode = f.readlines()
 
-print("[+] 아라 파일 읽기에 성공했습니다 : " + infile)
+print("[+] 아라 파일을 읽어들입니다... : " + infile)
 
 if "".join(araCode[-1:]).find("아라") == -1:
     print("[-] 정상적인 아라 파일이 아닙니다! 파일 하단에 \"아라\" 문자열을 넣으셨습니까?")

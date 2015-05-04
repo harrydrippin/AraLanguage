@@ -4,13 +4,12 @@ __author__ = 'Seunghwan Hong'
 
 def convert(araCode):
     result = []
+    loop_count = 0
     result.append("# 이 파일은 한글 프로그래밍 언어, 아라(Ara)에 의하여 작성되어진 Python 파일입니다.\n")
     result.append("# This file has been made by Ara, constructed by Korean language, Hangeul.\n")
     result.append("# 만들어진 시각 : " + datetime.today().strftime("%Y년 %m월 %d일 %H시 %M분 %S초\n\n"))
     for i in range(0, len(araCode)):
         data = araCode[i]
-
-        # TODO : 반복문을 중첩했을 때 카운터 변수 i가 겹치는 치명적인 버그가 존재 - 대안 필요
 
         # 들여쓰기에 대한 처리
         indent = data.count("\t")
@@ -41,10 +40,11 @@ def convert(araCode):
             result.append(b)
         elif r_repeatNum != -1:
             a = data.replace("번 반복하기", "").replace("\t", "").replace("\n", "")
-            b = ("\t" * indent) + "i = 0\n" + ("\t" * indent) + "while i < " + a + "\n" + ("\t" * indent) + "\ti = i + 1\n"
+            b = ("\t" * indent) + "__loopcnt" + str(loop_count) + " = 0\n" + ("\t" * indent) + "while __loopcnt" + str(loop_count) + " < " + a + "\n" + ("\t" * indent) + "\t__loopcnt" + str(loop_count) + " = __loopcnt" + str(loop_count) + " + 1\n"
+            loop_count += 1
             result.append(b)
         elif r_repeatForever != -1:
-            a = data.replace("무한 반복하기", "while 0 == 0")
+            a = data.replace("무한 반복하기", "while True")
             result.append(a)
         elif r_stopRepeat != -1:
             a = data.replace("반복 그만하기", "break")
