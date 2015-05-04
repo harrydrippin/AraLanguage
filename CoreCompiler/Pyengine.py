@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import re
 __author__ = 'Seunghwan Hong'
 
 def convert(araCode):
@@ -10,7 +10,6 @@ def convert(araCode):
     for i in range(0, len(araCode)):
         data = araCode[i]
 
-        # TODO : 문자열("") 안에서 띄어쓰기를 할 때 그것을 기준으로 스플릿하여 해석하는 치명적인 버그가 존재 - 대안 필요("조사를 기준으로 나눠서 생각하기!"), 지금은 _ 치환으로 보완
         # TODO : 반복문을 중첩했을 때 카운터 변수 i가 겹치는 치명적인 버그가 존재 - 대안 필요
 
         # 들여쓰기에 대한 처리
@@ -65,11 +64,11 @@ def convert(araCode):
 
 # 연산문 처리 함수
 def op_processor(data, indent):
-    data = data.split()  # (변수)[에/에서] (값)[을/를] [더하기/빼기/곱하기/나누기]
+    data = re.split("[에서|에게|에]|[을|를]", data)  # (변수)[에/에서] (값)[을/를] [더하기/빼기/곱하기/나누기]
 
-    data[0] = data[0].replace("에서", "").replace("에게", "").replace("에", "")
-    data[1] = data[1].replace("을", "").replace("를", "")
-    data[2] = data[2].replace("더하기", "+=").replace("빼기", "-=").replace("곱하기", "*=").replace("나누기", "/=")
+    data[0] = data[0].strip()
+    data[1] = data[1].strip()
+    data[2] = data[2].replace("더하기", "+=").replace("빼기", "-=").replace("곱하기", "*=").replace("나누기", "/=").strip()
 
     result = ("\t" * indent) + data[0] + " " + data[2] + " " + data[1] + "\n"
     return result

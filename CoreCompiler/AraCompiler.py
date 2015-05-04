@@ -68,7 +68,7 @@ try:
         cCode = ce.convert(araCode)
     f.close()
 except Exception as e:
-    print("[-] 예기치 못한 오류가 발생했습니다. 다시 시도하시거나, 에러 내용을 문의해주세요.")
+    print("[-] 예기치 못한 오류가 발생했습니다. 다시 시도하시거나, 에러 내용을 문의해주세요." + e)
     sys.exit(4)
 
 # 변환 완료
