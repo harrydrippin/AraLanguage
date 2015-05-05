@@ -10,8 +10,8 @@ Python이 환경 변수에 등록 되어 있거나, Mac OS X 처럼 미리 OS에
 ```
 python AraCompiler.py -i [아라 파일] -o [출력 위치] -l [언어]
 ```
-위와 같이 명령하면 변환됩니다. [언어] 부분에는 c, py, all이 들어갈 수 있으며, all의 경우 Python과 C 모두로 빌드합니다.
-하지만, Cengine, Pyengine은 AraCompiler.py 내부에서 모듈 참조되고 있기 때문에 독립적으로 실행될 수 없습니다.
+위와 같이 명령하면 변환됩니다.`[언어]` 부분에는 `c`, `py`, `all`이 들어갈 수 있으며, `all`의 경우 Python과 C 모두로 빌드합니다.
+하지만, `Cengine.py`, `Pyengine.py`는 `AraCompiler.py` 내부에서 모듈 참조되고 있기 때문에 독립적으로 실행될 수 없습니다.
 ## 개발자
 아라(Ara)에 대하여 문의가 있거나 버그, 에러 등을 보고하려 할 경우 아래로 연락해주세요:
 
