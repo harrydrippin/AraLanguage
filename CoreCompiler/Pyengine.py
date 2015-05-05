@@ -12,19 +12,19 @@ def convert(araCode):
 
         # 들여쓰기에 대한 처리
         indent = data.count("\t")
-        data = data.replace("_", " ")
 
         # 명령문 검출 방식 정의
         r_push = data.find("넣기")
         r_operator = "".join(data.split()[-1:]).find("더하기") + "".join(data.split()[-1:]).find("빼기") +\
                     "".join(data.split()[-1:]).find("곱하기") + "".join(data.split()[-1:]).find("나누기")
-        r_print = data.find("출력하기")
+        r_print = data.find("보여주기")
         r_repeatNum = data.find("번 반복하기")
         r_repeatForever = data.find("무한 반복하기")
         r_stopRepeat = data.find("반복 그만하기")
         r_if = data.find("만약")
         r_elif = data.find("그렇지 않고 만약")
-        r_else = data.find("그렇지 않으면")
+        r_else = data.find("아니면")
+        r_for = data.find("넣어가며 반복하기")
 
         # 검출된 명령문을 if-elif-else로 찾음
         if r_push != -1:
@@ -34,12 +34,13 @@ def convert(araCode):
             a = op_processor(data, indent)
             result.append(a)
         elif r_print != -1:
-            a = data.replace("을 출력하기", '').replace("를 출력하기", '').replace("\n", '')
+            a = data.replace("을 보여주기", '').replace("를 보여주기", '').replace("\n", '')
             b = ("\t" * indent) + "print(" + a.replace("\t", '') + ")\n"
             result.append(b)
         elif r_repeatNum != -1:
             a = data.replace("번 반복하기", "").replace("\t", "").replace("\n", "")
-            b = ("\t" * indent) + loopcnt(indent) + " = 0\n" + ("\t" * indent) + "while " + loopcnt(indent) + " < " + a + "\n" + ("\t" * indent) + "\t" + loopcnt(indent) + " = " + loopcnt(indent) + " + 1\n"
+            b = ("\t" * indent) + loopcnt(indent) + " = 0\n" + ("\t" * indent) + "while " + loopcnt(indent) \
+                + " < " + a + "\n" + ("\t" * indent) + "\t" + loopcnt(indent) + " = " + loopcnt(indent) + " + 1\n"
             result.append(b)
         elif r_repeatForever != -1:
             a = data.replace("무한 반복하기", "while True")
@@ -51,13 +52,19 @@ def convert(araCode):
             a = if_processor(data, indent)
             result.append(a)
         elif r_else != -1:
-            a = data.replace("그렇지 않으면", "else")
+            a = data.replace("아니면", "else")
             result.append(a)
+        elif r_for != -1:
+            a = data.replace("범위", "range")
+            a = re.split("[을|를]|에", a)
+            b = ("\t" * indent) + "for " + a[1].strip() + " in " + a[0].strip() + ":\n"
+            result.append(b)
         else:
             result.append(data)
 
-        # 한글로 된 사칙 연산 정의
-        result[-1:] = "".join(result[-1:]).replace("더하기", "+").replace("빼기", "-").replace("나누기", "/").replace("곱하기", "*").replace("나머지", "%")
+        # 명령문 변환 후 처리
+        result[-1:] = "".join(result[-1:]).replace("더하기", "+").replace("빼기", "-").replace("나누기", "/").replace("곱하기", "*").replace("나머지", "%")\
+            .replace("글자(", "str(")
     return result
 
 # 연산문 처리 함수
@@ -72,7 +79,7 @@ def op_processor(data, indent):
     return result
 
 # if 문 처리 함수
-def if_processor(data, indent):
+def if_processor(data, indent): # TODO : re.split()을 사용하여 더 짧게 하고, 만약 결과가 '0이면'의 꼴 지원하게 수정
     data = data.split()
 
     # elif 구분용 카운터
@@ -105,7 +112,7 @@ def if_processor(data, indent):
 
     return result
 
-def loopcnt(indent):
+def loopcnt(indent):  # TODO : Dictionary를 사용하여 최적화 필요 / 지금은 임시로!
     if indent == 0:
         return "i"
     elif indent == 1:

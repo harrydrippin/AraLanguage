@@ -12,7 +12,7 @@ p.add_option("-i", "--infile", action="store", help="작성하신 아라 파일�
 p.add_option("-o", "--outfile", action="store", help="변환된 파일의 경로 ('.'만 입력하면 이 파일과 같은 경로에 변환됩니다)", dest="outfile", metavar="[출력될 파일 경로]")
 
 # 변환할 언어를 지정
-p.add_option("-l", "--lang", action="store", type="choice", dest="lang", choices=["py", "c", "python", "all"], help="변환할 언어를 선택합니다. 언어는 Python과 C, 혹은 모두로 변환할 수 있습니다.")
+p.add_option("-l", "--lang", action="store", type="choice", dest="lang", metavar="[언어 이름]",choices=["py", "c", "python", "all"], help="변환할 언어를 선택합니다. 언어는 Python과 C, 혹은 모두로 변환할 수 있습니다.")
 
 # 옵션 파싱 및 변수 설정
 opts, args = p.parse_args()
@@ -68,7 +68,8 @@ try:
         cCode = ce.convert(araCode)
     f.close()
 except Exception as e:
-    print("[-] 예기치 못한 오류가 발생했습니다. 다시 시도하시거나, 에러 내용을 문의해주세요." + e)
+    print("[-] 예기치 못한 오류가 발생했습니다. 다시 시도하시거나, 에러 내용을 문의해주세요.")
+    print("[-] 에러 명세 : " + str(e))
     sys.exit(4)
 
 # 변환 완료
@@ -98,6 +99,7 @@ try:
         f.close()
 except Exception as e:
     print("[-] 예기치 못한 오류가 발생했습니다. 다시 시도하시거나, 에러 내용을 문의해주세요.")
+    print("[-] 에러 명세 : " + str(e))
     sys.exit(5)
 
 print("[+] 변환 완료 파일이 다음 위치에 저장되었습니다 : " + outfile)
