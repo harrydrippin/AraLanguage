@@ -2,7 +2,6 @@ import sys, os, optparse
 
 __author__ = 'Seunghwan Hong'
 
-
 def main():
     p = optparse.OptionParser()
     usage = "%prog -i [아라 파일] -o [출력될 파일 경로] (-c, -p, -b)"
@@ -11,10 +10,10 @@ def main():
 
     # 본 파일과 변환된 파일의 경로를 지정
     p.add_option("-i", "--infile", action="store", help="작성하신 아라 파일의 경로", dest="infile", metavar="[아라 파일 경로]")
-    p.add_option("-o", "--outfile", action="store", help="변환된 파일의 경로 ('.'만 입력하면 이 파일과 같은 경로에 변환됩니다)", dest="outfile", metavar="[출력될 파일 경로]")
+    p.add_option("-o", "--outfile", action="store", help="변환된 파일의 경로 ('.'만 입력하면 이 파일과 같은 경로에 변환됩니다)", dest="outfile", metavar="[출력될 파일 경로]", default=".")
 
     # 변환할 언어를 지정
-    p.add_option("-l", "--lang", action="store", type="choice", dest="lang", metavar="[언어 이름]",choices=["py", "c", "python", "all"], help="변환할 언어를 선택합니다. 언어는 Python과 C, 혹은 모두로 변환할 수 있습니다.")
+    p.add_option("-l", "--lang", action="store", type="choice", dest="lang", metavar="[언어 이름]", choices=["py", "c", "python", "all"], default="py", help="변환할 언어를 선택합니다. 언어는 Python과 C, 혹은 모두로 변환할 수 있습니다.")
 
     # 옵션 파싱 및 변수 설정
     opts, args = p.parse_args()
@@ -56,16 +55,16 @@ def main():
     try:
         if lang == "py" or lang == "python":
             print("[+] Python으로 변환을 시작합니다...")
-            import Pyengine as engine
+            from . import Pyengine as engine
             pyCode = engine.convert(araCode)
         elif lang == "c":
             print("[+] C로 변환을 시작합니다...")
-            import Cengine as engine
+            from . import Cengine as engine
             cCode = engine.convert(araCode)
         else:
             print("[+] Python과 C로 변환을 시작합니다...")
-            import Pyengine as pye
-            import Cengine as ce
+            from . import Pyengine as pye
+            from . import Cengine as ce
             pyCode = pye.convert(araCode)
             cCode = ce.convert(araCode)
         f.close()
@@ -107,3 +106,5 @@ def main():
     print("[+] 변환 완료 파일이 다음 위치에 저장되었습니다 : " + outfile)
     print("[+] 즐거운 프로그래밍 되세요!")
     sys.exit(1)
+
+main()

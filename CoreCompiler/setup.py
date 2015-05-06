@@ -7,6 +7,7 @@ setup(
     description='한글 프로그래밍 언어',
     author='홍승환',
     author_email='hj332921@naver.com',
+    py_modules = ['ara.Pyengine', 'ara.Cengine'],
     entry_points = {
         'console_scripts': [
             'ara = ara.AraCompiler:main',
