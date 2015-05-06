@@ -11,6 +11,7 @@ def convert(araCode):
         data = araCode[i]
 
         # 들여쓰기에 대한 처리
+        data = data.replace("    ", "\t")
         indent = data.count("\t")
 
         # 명령문 검출 방식 정의
@@ -25,6 +26,9 @@ def convert(araCode):
         r_elif = data.find("그렇지 않고 만약")
         r_else = data.find("아니면")
         r_for = data.find("넣어가며 반복하기")
+        r_def = data.find("함수")
+        r_return = data.find("내보내기")
+        r_defstop = data.find("함수 끝내기")
 
         # 검출된 명령문을 if-elif-else로 찾음
         if r_push != -1:
@@ -59,6 +63,16 @@ def convert(araCode):
             a = re.split("[을|를]|에", a)
             b = ("\t" * indent) + "for " + a[1].strip() + " in " + a[0].strip() + ":\n"
             result.append(b)
+        elif r_defstop != -1:
+            a = data.replace("함수 끝내기", "return")
+            result.append(a)
+        elif r_def != -1:
+            a = data.replace("함수", "def")
+            result.append(a)
+        elif r_return != -1:
+            a = data.replace("을 내보내기", "").replace("를 내보내기", "").strip()
+            b = ("\t" * indent) + "return " + a
+            result.append(b)
         else:
             result.append(data)
 
@@ -69,12 +83,11 @@ def convert(araCode):
 
 # 연산문 처리 함수
 def op_processor(data, indent):
-    data = re.split("[에서|에게|에]|[을|를]", data)  # (변수)[에/에서] (값)[을/를] [더하기/빼기/곱하기/나누기]
+    data = re.split("에서|에|을|를", data)  # (변수)[에/에서] (값)[을/를] [더하기/빼기/곱하기/나누기]
 
     data[0] = data[0].strip()
     data[1] = data[1].strip()
     data[2] = data[2].replace("더하기", "+=").replace("빼기", "-=").replace("곱하기", "*=").replace("나누기", "/=").strip()
-
     result = ("\t" * indent) + data[0] + " " + data[2] + " " + data[1] + "\n"
     return result
 
