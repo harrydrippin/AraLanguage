@@ -55,16 +55,16 @@ def main():
     try:
         if lang == "py" or lang == "python":
             print("[+] Python으로 변환을 시작합니다...")
-            import Pyengine as engine
+            from ara import Pyengine as engine
             pyCode = engine.convert(araCode)
         elif lang == "c":
             print("[+] C로 변환을 시작합니다...")
-            import Cengine as engine
+            from ara import Cengine as engine
             cCode = engine.convert(araCode)
         else:
             print("[+] Python과 C로 변환을 시작합니다...")
-            import Pyengine as pye
-            import Cengine as ce
+            from ara import Pyengine as pye
+            from ara import Cengine as ce
             pyCode = pye.convert(araCode)
             cCode = ce.convert(araCode)
         f.close()
