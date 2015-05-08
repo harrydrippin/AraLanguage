@@ -1,3 +1,4 @@
+# -*- coding : utf-8 -*-
 from datetime import datetime
 import re
 __author__ = 'Seunghwan Hong'
@@ -6,7 +7,7 @@ def convert(araCode):
     result = []
     result.append("# 이 파일은 한글 프로그래밍 언어, 아라(Ara)에 의하여 작성되어진 Python 파일입니다.\n")
     result.append("# This file has been made by Ara, constructed by Korean language, Hangeul.\n")
-    result.append("# 만들어진 시각 : " + datetime.today().strftime("%Y년 %m월 %d일 %H시 %M분 %S초\n\n"))
+    result.append("# 만들어진 시각 : " + datetime.today().strftime("%Y. %m. %d. %H:%M:%S\n\n"))
     for i in range(0, len(araCode)):
         data = araCode[i]
 

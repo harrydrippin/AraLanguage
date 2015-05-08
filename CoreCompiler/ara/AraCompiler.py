@@ -55,22 +55,22 @@ def main():
     try:
         if lang == "py" or lang == "python":
             print("[+] Python으로 변환을 시작합니다...")
-            from . import Pyengine as engine
+            import Pyengine as engine
             pyCode = engine.convert(araCode)
         elif lang == "c":
             print("[+] C로 변환을 시작합니다...")
-            from . import Cengine as engine
+            import Cengine as engine
             cCode = engine.convert(araCode)
         else:
             print("[+] Python과 C로 변환을 시작합니다...")
-            from . import Pyengine as pye
-            from . import Cengine as ce
+            import Pyengine as pye
+            import Cengine as ce
             pyCode = pye.convert(araCode)
             cCode = ce.convert(araCode)
         f.close()
     except Exception as e:
         print("[-] 예기치 못한 오류가 발생했습니다. 다시 시도하시거나, 에러 내용을 문의해주세요.")
-        print("[-] 에러 명세 : " + str(e))
+        print("[-] 에러 명세 : " + e)
         sys.exit(4)
 
     # 변환 완료
