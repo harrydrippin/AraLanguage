@@ -1,25 +1,34 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html>
   <head>
-    <meta charset="UTF-8">
-    <title>AraLanguage by hj332921</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">AraLanguage</h1>
-      <h2 class="project-tagline">아라 : 한글 프로그래밍 언어</h2>
-      <a href="https://github.com/hj332921/AraLanguage" class="btn">View on GitHub</a>
-      <a href="https://github.com/hj332921/AraLanguage/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/hj332921/AraLanguage/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
-    <section class="main-content">
-      <h1>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>AraLanguage by hj332921</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>AraLanguage</h1>
+        <h2>아라 : 한글 프로그래밍 언어</h2>
+        <a href="https://github.com/hj332921/AraLanguage" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
 <a id="아라ara--한글-프로그래밍-언어" class="anchor" href="#%EC%95%84%EB%9D%BCara--%ED%95%9C%EA%B8%80-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D-%EC%96%B8%EC%96%B4" aria-hidden="true"><span class="octicon octicon-link"></span></a>아라(Ara) : 한글 프로그래밍 언어</h1>
 
 <p>아라(Ara)는 한글로 직관적이고, 쉽게 프로그래밍할 수 있는 프로그래밍 언어입니다.</p>
@@ -28,7 +37,7 @@
 <a id="의도와-예제" class="anchor" href="#%EC%9D%98%EB%8F%84%EC%99%80-%EC%98%88%EC%A0%9C" aria-hidden="true"><span class="octicon octicon-link"></span></a>의도와 예제</h2>
 
 <p>프로그래밍을 처음 배우시는 분들이나, 정보 교육을 처음 받는 초등학생들과 중학생들이 생소한 프로그래밍 언어를 좀 더 쉽게 
-받아들이고, 변환된 Python과 C 코드를 함께 학습하며 자연스럽게 실제 언어로 옮겨갈 수 있도록 설계되었습니다. 그래서 한국어의 
+받아들이고, 변환된 Python 코드를 함께 학습하며 자연스럽게 실제 언어로 옮겨갈 수 있도록 설계되었습니다. 그래서 한국어의 
 어순과 조사 등의 개념을 그대로 가지게 만들어졌고, <strong>생각나는 대로 쓰면 실행되도록</strong> 하는 것이 바로 아라의 목표입니다.</p>
 
 <p>아래는 초등학교 과정에서 배우는 원의 넓이 공식을 아라로 구현한 것입니다.</p>
@@ -57,26 +66,53 @@ c에 1을 넣기
 <h2>
 <a id="구현" class="anchor" href="#%EA%B5%AC%ED%98%84" aria-hidden="true"><span class="octicon octicon-link"></span></a>구현</h2>
 
-<p>아라는 Python 3.4로 구현되었으며, 빌드할 컴퓨터에 Python 3.4가 설치되어 있어야 작동합니다. 차후 Windows용 설치 파일이 제공되면 
-더 이상 Python이 필요 없어질 것입니다. </p>
+<p>아라는 Python 3.4로 구현되었으며, 현재는 빌드할 컴퓨터에 Python 3.4가 설치되어 있어야 작동합니다.</p>
 
-<p>아라는 YACC(Yet Another Compiler Compiler) 등의 컴파일러-컴파일러를 사용하지 않고, 단지 한국어에서 나타나는 규칙과 정규식을 통한 <strong>한국어 구문 분석</strong>을 통해서 Python이나 C로 변환해주는 방식을 취하고 있습니다. 그러므로 컴파일러에 대한 지식이 없어도 <strong>Python을 알고 있다면</strong> 아라를 구성하는 소스를 열람하는 것에는 아무런 지장이 없을 것입니다.</p>
+<p>아라는 YACC(Yet Another Compiler Compiler)나 JavaCC 등의 컴파일러-컴파일러를 사용하지 않고, 단지 한국어에서 나타나는 규칙과 정규식을 통한 <strong>한국어 구문 분석</strong>을 통해서 Python으로 변환해주는 방식을 취하고 있습니다. 그러므로 컴파일러에 대한 지식이 없어도 <strong>Python을 알고 있다면</strong> 아라를 구성하는 소스를 열람하는 것에는 아무런 지장이 없을 것입니다.</p>
+
+<h2>
+<a id="설치" class="anchor" href="#%EC%84%A4%EC%B9%98" aria-hidden="true"><span class="octicon octicon-link"></span></a>설치</h2>
+
+<p>git와 Python이 이미 설치되어 있다면, 다음과 같이 명령하시면 됩니다.</p>
+
+<pre><code>git clone https//github.com/hj332921/AraLanguage.git
+cd CoreCompiler
+python setup.py install
+</code></pre>
+
+<p>git이 설치되어있지 않거나 무엇인지 모르시는 분들은 현재 Zip 파일과 tar.gz 파일이 준비되어 있으므로 다운받으시면 됩니다. 
+다운받으신 분들에 한해서, 해당 디렉토리에서 다음과 같이 하시면 됩니다.</p>
+
+<pre><code>python setup.py install
+</code></pre>
+
+<p>Python이 설치되지 않은 분들께서는 <a href="http://python.org/downloads/">Python 다운로드 홈페이지</a>를 참조하십시오.</p>
 
 <h2>
 <a id="실행" class="anchor" href="#%EC%8B%A4%ED%96%89" aria-hidden="true"><span class="octicon octicon-link"></span></a>실행</h2>
 
-<p>추후 모든 것이 묶여서 우선 <code>setup.py</code>로 제공될 것이며, 그 뒤에 Windows용 설치 파일이 제공될 예정입니다.
-현재는 많은 부분이 개발 중이므로, 잠시 기다려주세요!</p>
+<p><em>현재 Windows 설치 파일이 준비 중입니다!</em></p>
 
 <p>Python이 환경 변수에 등록 되어 있거나, Mac OS X 처럼 미리 OS에 설치 및 등록되어 있는 경우, 어느 위치에서나 사용할 수 있습니다.</p>
 
-<pre><code>python AraCompiler.py -i [아라 파일] -o [출력 위치] -l [언어]
+<pre><code>ara [아라 파일] [-o 출력 경로] [-n]
 </code></pre>
 
-<p>위와 같이 명령하면 변환됩니다.<code>[언어]</code> 부분에는 <code>c</code>, <code>py</code>, <code>all</code>이 들어갈 수 있으며, <code>all</code>의 경우 Python과 C 모두로 빌드합니다.
-하지만, <code>Cengine.py</code>, <code>Pyengine.py</code>는 <code>AraCompiler.py</code> 내부에서 모듈 참조되고 있기 때문에 독립적으로 실행될 수 없습니다.</p>
+<p><code>-o, -n</code>은 선택적으로 결정할 수 있는 옵션입니다.</p>
 
-<p>위에 명시해두었듯, 현재는 임시적인 실행 방법이며, 추후 더 쉽게 실행 가능하게 수정될 것입니다.</p>
+<ul>
+<li>
+<code>-o</code> 옵션은 출력 경로를 지정하여 변환된 Python 파일이 그곳에 위치하게 해 줍니다.</li>
+<li>
+<code>-n</code> 옵션은 <code>--dontrun</code>으로도 지정할 수 있으며, 부여할 경우 변환을 마치고 실행 결과를 보여주지 않습니다.</li>
+</ul>
+
+<p>다음과 같은 실행 방식이 있을 수 있습니다.</p>
+
+<pre><code>ara sample.ara                   # sample.ara를 변환하고, 현재 위치에 저장하며, 실행함
+ara -n sample.ara                # sample.ara를 변환하고, 현재 위치에 저장하며, 실행하지 않음
+ara -o C:\myProjects sample.ara  # sample.ara를 변환하고, C:\myProjects에 저장하며, 실행함
+</code></pre>
 
 <h2>
 <a id="개발자" class="anchor" href="#%EA%B0%9C%EB%B0%9C%EC%9E%90" aria-hidden="true"><span class="octicon octicon-link"></span></a>개발자</h2>
@@ -84,16 +120,25 @@ c에 1을 넣기
 <p>아라(Ara)에 대하여 문의가 있거나 버그, 에러 등을 보고하려 할 경우 아래로 연락해주세요:</p>
 
 <p><strong>홍승환 : <a href="mailto:hj332921@naver.com">hj332921@naver.com</a></strong></p>
+        </section>
 
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/hj332921/AraLanguage">AraLanguage</a> is maintained by <a href="https://github.com/hj332921">hj332921</a>.</span>
+        <aside id="sidebar">
+          <a href="https://github.com/hj332921/AraLanguage/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/hj332921/AraLanguage/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
 
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
-      </footer>
+          <p class="repo-owner"><a href="https://github.com/hj332921/AraLanguage"></a> is maintained by <a href="https://github.com/hj332921">hj332921</a>.</p>
 
-    </section>
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
 
   
   </body>
 </html>
-
