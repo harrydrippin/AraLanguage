@@ -127,23 +127,10 @@ def if_processor(data, indent): # TODO : re.split()을 사용하여 더 짧게 �
 
     return result
 
-def loopcnt(indent):  # TODO : Dictionary를 사용하여 최적화 필요 / 지금은 임시로!
-    if indent == 0:
-        return "i"
-    elif indent == 1:
-        return "j"
-    elif indent == 2:
-        return "k"
-    elif indent == 3:
-        return "l"
-    elif indent == 4:
-        return "m"
-    elif indent == 5:
-        return "n"
-    elif indent == 6:
-        return "o"
-    elif indent == 7:
-        return "p"
+def loopcnt(indent):
+    loop_alphabet = "ijklmnop"
+    if indent <= 7:
+        return loop_alphabet[indent]
     else:
         return "__loopcnt" + str(indent)
 
