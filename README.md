@@ -33,9 +33,23 @@ c에 1을 넣기
  아라는 Python 3.4로 구현되었으며, 현재는 빌드할 컴퓨터에 Python 3.4가 설치되어 있어야 작동합니다.
 
  아라는 YACC(Yet Another Compiler Compiler)나 JavaCC 등의 컴파일러-컴파일러를 사용하지 않고, 단지 한국어에서 나타나는 규칙과 정규식을 통한 **한국어 구문 분석**을 통해서 Python으로 변환해주는 방식을 취하고 있습니다. 그러므로 컴파일러에 대한 지식이 없어도 **Python을 알고 있다면** 아라를 구성하는 소스를 열람하는 것에는 아무런 지장이 없을 것입니다.
+ 
+## 설치
+git와 Python이 이미 설치되어 있다면, 다음과 같이 명령하시면 됩니다.
+```
+git clone https//github.com/hj332921/AraLanguage.git
+cd CoreCompiler
+python setup.py install
+```
+git이 설치되어있지 않거나 무엇인지 모르시는 분들은 현재 Zip 파일과 tar.gz 파일이 준비되어 있으므로 다운받으시면 됩니다. 
+다운받으신 분들에 한해서, 해당 디렉토리에서 다음과 같이 하시면 됩니다.
+```
+python setup.py install
+```
+Python이 설치되지 않은 분들께서는 [Python 다운로드 홈페이지](http://python.org/downloads/)를 참조하십시오.
 
 ## 실행
- __현재 Windows 설치 파일이 준비 중입니다!__
+ _현재 Windows 설치 파일이 준비 중입니다!_
 
  Python이 환경 변수에 등록 되어 있거나, Mac OS X 처럼 미리 OS에 설치 및 등록되어 있는 경우, 어느 위치에서나 사용할 수 있습니다.
 ```
@@ -45,7 +59,13 @@ ara [아라 파일] [-o 출력 경로] [-n]
  
  * `-o` 옵션은 출력 경로를 지정하여 변환된 Python 파일이 그곳에 위치하게 해 줍니다.
  * `-n` 옵션은 `--dontrun`으로도 지정할 수 있으며, 부여할 경우 변환을 마치고 실행 결과를 보여주지 않습니다.
-
+ 
+다음과 같은 실행 방식이 있을 수 있습니다.
+```
+ara sample.ara                   # sample.ara를 변환하고, 현재 위치에 저장하며, 실행함
+ara -n sample.ara                # sample.ara를 변환하고, 현재 위치에 저장하며, 실행하지 않음
+ara -o C:\myProjects sample.ara  # sample.ara를 변환하고, C:\myProjects에 저장하며, 실행함
+```
 
 ## 개발자
  아라(Ara)에 대하여 문의가 있거나 버그, 에러 등을 보고하려 할 경우 아래로 연락해주세요:
