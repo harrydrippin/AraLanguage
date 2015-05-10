@@ -2,7 +2,6 @@ import sys, os, argparse
 
 __author__ = 'Seunghwan Hong'
 
-
 def main():
     p = argparse.ArgumentParser(description="예) ara sample.ara / ara -n sample.ara / ara sample.ara C:\myProjects")
     p.add_argument("arafile", help="작성하신 아라 파일의 경로", metavar="[아라 파일]")
@@ -36,8 +35,8 @@ def main():
 
     # 언어별로 변환 : 엔진 연계
     try:
-        from ara import Pyengine as engine
-        py_code = engine.convert(araCode)
+        import Pyengine
+        py_code = Pyengine.convert(araCode)
         f.close()
     except Exception as e:
         print("[-] 예기치 못한 오류가 발생했습니다. 다시 시도하시거나, 에러 내용을 문의해주세요.")
@@ -45,7 +44,6 @@ def main():
         sys.exit(4)
 
     outfile_path = outfile + "/" + os.path.basename(infile).replace(".ara", "") + ".py"
-    print(outfile_path)
 
     try:
         f = open(outfile_path, "w")
@@ -58,9 +56,9 @@ def main():
         sys.exit(5)
     print("[*] 실행 결과 : \n")
     if os.name != "nt":
-        os.system("python3 " + os.path.basename(infile).strip(".ara") + ".py")
+        os.system("python3 " + outfile_path)
     else:
-        os.system("python " + os.path.basename(infile).strip(".ara") + ".py")
+        os.system("python " + outfile_path)
     sys.exit(1)
 
 main()

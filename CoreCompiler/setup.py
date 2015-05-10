@@ -2,7 +2,7 @@ from setuptools import setup
 import os, sys
 
 print("[*] 아라(Ara) : 한글 프로그래밍 언어\n")
-if str(sys.version_info[:1]).replace("(", "").replace(",)", "") != 3:
+if str(sys.version_info[:1]).replace("(", "").replace(",)", "") != "3":
     print("[!] 아라는 Python 3 이상에서 동작합니다. Python 최신 버전이 필요합니다.")
     print("[!] 관련된 정보는 https://www.python.org/downloads/ 에서 확인하실 수 있습니다.")
     sys.exit(0)
@@ -21,7 +21,7 @@ setup(
     },
 )
 
-print("[+] 관련 설정을 재정의중입니다...\n")
+print("\n[+] 관련 설정을 재정의중입니다...\n")
 
 if os.name == 'nt':
     print("[?] 파이썬의 설치 경로를 입력해주세요. (일반적으로 C:\Python[버전] 입니다.)")

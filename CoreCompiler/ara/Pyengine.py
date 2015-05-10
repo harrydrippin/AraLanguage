@@ -4,8 +4,9 @@ import re
 __author__ = 'Seunghwan Hong'
 
 def convert(araCode):
+    # TODO : 문자열을 전처리 과정에서 먼저 파싱해서 __string1__과 같은 형식으로 치환해놓고 계산하는 방법을 적용
     result = []
-    result.append("# -*- coding : utf-8 -*-")
+    result.append("# -*- coding : utf-8 -*-\n")
     result.append("# 이 파일은 한글 프로그래밍 언어, 아라(Ara)에 의하여 작성되어진 Python 파일입니다.\n")
     result.append("# This file has been made by Ara, constructed by Korean language, Hangeul.\n")
     result.append("# 만들어진 시각 : " + datetime.today().strftime("%Y. %m. %d. %H:%M:%S\n\n"))
@@ -20,7 +21,8 @@ def convert(araCode):
         r_push = data.find("넣기")
         r_operator = "".join(data.split()[-1:]).find("더하기") + "".join(data.split()[-1:]).find("빼기") +\
                     "".join(data.split()[-1:]).find("곱하기") + "".join(data.split()[-1:]).find("나누기")
-        r_print = data.find("보여주기")
+        r_print = data.find("보여주기") + data.find("출력하기")
+        r_input = data.find("입력받기")  # TODO : 방식 정의 필요 input("something") : 변수[을/를] 문자열[로/으로] 입력받기
         r_repeatNum = data.find("번 반복하기")
         r_repeatForever = data.find("무한 반복하기")
         r_stopRepeat = data.find("반복 그만하기")
@@ -39,9 +41,15 @@ def convert(araCode):
         elif r_operator != -4:
             a = op_processor(data, indent)
             result.append(a)
-        elif r_print != -1:
-            a = data.replace("을 보여주기", '').replace("를 보여주기", '').replace("\n", '')
-            b = ("\t" * indent) + "print(" + a.replace("\t", '') + ")\n"
+        elif r_print != -2:
+            a = data.replace("을 보여주기", '').replace("를 보여주기", '').replace("을 출력하기", "").replace("를 출력하기", "").replace("\n", " ")
+            b = ("\t" * indent) + "print(" + a.replace("\t", '').strip() + ")\n"
+            result.append(b)
+        elif r_input != -1:
+            data = data.replace("으로", "로")
+            a = re.split("[을|를]|로", data)  # [0] 변수, [1] 문자열, [2] 입력받기
+            print(a)
+            b = ("\t" * indent) + a[0].strip() + " = input(" + a[1].strip() + ")\n"
             result.append(b)
         elif r_repeatNum != -1:
             a = data.replace("번 반복하기", "").replace("\t", "").replace("\n", "")
@@ -94,7 +102,7 @@ def op_processor(data, indent):
     return result
 
 # if 문 처리 함수
-def if_processor(data, indent): # TODO : re.split()을 사용하여 더 짧게 하고, 만약 결과가 '0이면'의 꼴 지원하게 수정
+def if_processor(data, indent): # TODO : 만약 결과가 '0이면'의 꼴 지원하게 수정, 값 부분에 띄어쓰기 포함 문자열 있을 때 치명적인 버그 발생.
     data = data.split()
 
     # elif 구분용 카운터
@@ -127,6 +135,7 @@ def if_processor(data, indent): # TODO : re.split()을 사용하여 더 짧게 �
 
     return result
 
+# 반복문 카운터 처리
 def loopcnt(indent):
     loop_alphabet = "ijklmnop"
     if indent <= 7:
