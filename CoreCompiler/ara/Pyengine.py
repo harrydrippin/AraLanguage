@@ -12,6 +12,12 @@ def convert(araCode):
     result.append("# 만들어진 시각 : " + datetime.today().strftime("%Y. %m. %d. %H:%M:%S\n\n"))
     for i in range(0, len(araCode)):
         data = araCode[i]
+        string = ""
+
+        # 문자열에 대한 처리
+        if data.find("\"") + data.rfind("\"") != -2:
+            string = data[data.find("\""):data.rfind("\"") + 1]
+            data = data.replace(string, "__string__")
 
         # 들여쓰기에 대한 처리
         data = data.replace("    ", "\t")
@@ -37,58 +43,47 @@ def convert(araCode):
         # 검출된 명령문을 if-elif-else로 찾음
         if r_push != -1:
             a = data.replace("에게 ", " = ").replace("에 ", " = ").replace("을 넣기", "").replace("를 넣기", "")
-            result.append(a)
         elif r_operator != -4:
             a = op_processor(data, indent)
-            result.append(a)
         elif r_print != -2:
             a = data.replace("을 보여주기", '').replace("를 보여주기", '').replace("을 출력하기", "").replace("를 출력하기", "").replace("\n", " ")
-            b = ("\t" * indent) + "print(" + a.replace("\t", '').strip() + ")\n"
-            result.append(b)
+            a = ("\t" * indent) + "print(" + a.replace("\t", '').strip() + ")\n"
         elif r_input != -1:
             data = data.replace("으로", "로")
             a = re.split("[을|를]|로", data)  # [0] 변수, [1] 문자열, [2] 입력받기
             print(a)
-            b = ("\t" * indent) + a[0].strip() + " = input(" + a[1].strip() + ")\n"
-            result.append(b)
+            a = ("\t" * indent) + a[0].strip() + " = input(" + a[1].strip() + ")\n"
         elif r_repeatNum != -1:
             a = data.replace("번 반복하기", "").replace("\t", "").replace("\n", "")
-            b = ("\t" * indent) + loopcnt(indent) + " = 0\n" + ("\t" * indent) + "while " + loopcnt(indent) \
+            a = ("\t" * indent) + loopcnt(indent) + " = 0\n" + ("\t" * indent) + "while " + loopcnt(indent) \
                 + " < " + a + "\n" + ("\t" * indent) + "\t" + loopcnt(indent) + " = " + loopcnt(indent) + " + 1\n"
-            result.append(b)
         elif r_repeatForever != -1:
             a = data.replace("무한 반복하기", "while True")
-            result.append(a)
         elif r_stopRepeat != -1:
             a = data.replace("반복 그만하기", "break")
-            result.append(a)
         elif r_if != -1 or r_elif != -1:
             a = if_processor(data, indent)
-            result.append(a)
         elif r_else != -1:
             a = data.replace("아니면", "else")
-            result.append(a)
         elif r_for != -1:
             a = data.replace("범위", "range")
             a = re.split("[을|를]|에", a)
-            b = ("\t" * indent) + "for " + a[1].strip() + " in " + a[0].strip() + ":\n"
-            result.append(b)
+            a = ("\t" * indent) + "for " + a[1].strip() + " in " + a[0].strip() + ":\n"
         elif r_defstop != -1:
             a = data.replace("함수 끝내기", "return")
-            result.append(a)
         elif r_def != -1:
             a = data.replace("함수", "def")
-            result.append(a)
         elif r_return != -1:
             a = data.replace("을 내보내기", "").replace("를 내보내기", "").strip()
-            b = ("\t" * indent) + "return " + a
-            result.append(b)
+            a = ("\t" * indent) + "return " + a
         else:
-            result.append(data)
+            a = data
 
         # 명령문 변환 후 처리
-        result[-1:] = "".join(result[-1:]).replace("더하기", "+").replace("빼기", "-").replace("나누기", "/").replace("곱하기", "*").replace("나머지", "%")\
+        a = a.replace("더하기", "+").replace("빼기", "-").replace("나누기", "/").replace("곱하기", "*").replace("나머지", "%")\
             .replace("글자(", "str(")
+        a = a.replace("__string__", string)
+        result.append(a)
     return result
 
 # 연산문 처리 함수
