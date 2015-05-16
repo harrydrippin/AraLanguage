@@ -7,7 +7,7 @@ def convert(araCode):
     result = []
     result.append("# -*- coding : utf-8 -*-\n")
     result.append("# 이 파일은 한글 프로그래밍 언어, 아라(Ara)에 의하여 작성되어진 Python 파일입니다.\n")
-    result.append("# This file has been made by Ara, constructed by Korean language, Hangeul.\n")
+    result.append("# Pyengine build.\n")
     result.append("# 만들어진 시각 : " + datetime.today().strftime("%Y. %m. %d. %H:%M:%S\n\n"))
     for i in range(0, len(araCode)):
         data = araCode[i]
@@ -94,7 +94,7 @@ def op_processor(data, indent):
     return result
 
 # if 문 처리 함수
-def if_processor(data, indent): # TODO : 만약 결과가 '0이면'의 꼴 지원하게 수정 [ 만약 변수가 값보다 상태(하)면, 만약 변수가 값이면, (+) 만약 변수가 값이 아니면? ]
+def if_processor(data, indent):
     data = data.split()
 
     # elif 구분용 카운터
