@@ -27,7 +27,7 @@ def convert(araCode):
         r_operator = "".join(data.split()[-1:]).find("더하기") + "".join(data.split()[-1:]).find("빼기") +\
                     "".join(data.split()[-1:]).find("곱하기") + "".join(data.split()[-1:]).find("나누기")
         r_print = data.find("보여주기") + data.find("출력하기")
-        r_input = data.find("입력받기")
+        r_input = data.find("입력받기") # TODO: input에서 무조건 문자열로 값을 받음 : 반환값 타입을 지정하게 수정해야 함
         r_repeatNum = data.find("번 반복하기")
         r_repeatForever = data.find("무한 반복하기")
         r_stopRepeat = data.find("반복 그만하기")
@@ -103,7 +103,7 @@ def if_processor(data, indent): # TODO : 만약 결과가 '0이면'의 꼴 지�
     if data[0].find("그렇지") != -1:
         i = 2
     print(len(data))
-    if len(data) >= 4:  # 만약 변수가 값보다 상태하면
+    if len(data) == 4:  # 만약 변수가 값보다 상태하면
         # 변수
         data[i + 1] = data[i + 1][:-1]
 
@@ -126,14 +126,14 @@ def if_processor(data, indent): # TODO : 만약 결과가 '0이면'의 꼴 지�
         else:
             result = ("\t" * indent) + "if " + data[1] + " " + data[3] + " " + data[2] + ":\n"
         return result
-    elif len(data) == 3:  # 만약 변수가 값이면
-        result = (data[0] + data[1]).replace("이", " == ").replace("가", " == ").replace("만약", "")
-        data[2] = data[2].replace("이면", "").replace("면", "")
+    elif len(data) == 3 or len(data) == 5:  # 만약 변수가 값이면
+        result = (data[i] + data[i + 1]).replace("이", " == ").replace("가", " == ").replace("만약", "").replace("그렇지않고", "")
+        data[i + 2] = data[i + 2].replace("이면", "").replace("면", "")
 
         if i == 2:
-            result = ("\t" * indent) + "elif " + result + data[2] + "\n"
+            result = ("\t" * indent) + "elif " + result + data[i + 2] + "\n"
         else:
-            result = ("\t" * indent) + "if " + result + data[2] + "\n"
+            result = ("\t" * indent) + "if " + result + data[i + 2] + "\n"
         return result
     else:
         return "error"
