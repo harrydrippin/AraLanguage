@@ -27,7 +27,7 @@ def convert(araCode):
         r_operator = "".join(data.split()[-1:]).find("더하기") + "".join(data.split()[-1:]).find("빼기") +\
                     "".join(data.split()[-1:]).find("곱하기") + "".join(data.split()[-1:]).find("나누기")
         r_print = data.find("보여주기") + data.find("출력하기")
-        r_input = data.find("입력받기") # TODO: input에서 무조건 문자열로 값을 받음 : 반환값 타입을 지정하게 수정해야 함
+        r_input = data.find("입력받기") # TODO: input()에서 무조건 문자열로 값을 받음 : 반환값 타입을 지정하게 수정해야 함
         r_repeatNum = data.find("번 반복하기")
         r_repeatForever = data.find("무한 반복하기")
         r_stopRepeat = data.find("반복 그만하기")
@@ -148,5 +148,5 @@ def loopcnt(indent):
 
 if __name__ == "__main__":
     import sys
-    print("이 파일은 모듈로써, 독립실행될 수 없습니다. 변환이 목적이시라면, AraCompiler.py를 사용하세요.")
+    print("이 파일은 모듈로써, 독립실행될 수 없습니다. 변환이 목적이시라면, ara 명령어를 사용하세요.")
     sys.exit(1)

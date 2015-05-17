@@ -10,13 +10,35 @@ def convert(araCode):
     result.append("# NewPyengine build, beta 0.0.3\n")
     result.append("# 만들어진 시각 : " + datetime.today().strftime("%Y. %m. %d. %H:%M:%S\n\n"))
     for i in range(0, len(araCode)):
+        data = araCode[i]
+        string = ""
+
+        # 전처리 : 문자열 치환
+        if data.find("\"") + data.rfind("\"") != -2:
+            string = data[data.find("\""):data.rfind("\"") + 1]
+            data = data.replace(string, "__string__")
+
+        # 전처리 : 들여쓰기 처리
+        data = data.replace("    ", "\t")
+        indent = data.count("\t")
+
+        # 공백을 기준으로 나누어 리스트로 변환
+        data = data.split()
+
+        # 리스트 분석
+        for piece in data:
+            pass
+
+        # 포맷
         pass
-    # TODO: 조사 연구용 엔진 파일. 조사 스플릿, 의미 분석, 포맷, 추가의 알고리즘.
+
+        # 후처리 : 문자열 재 치환
+        pass
 
     return result
 
 # 연산문 처리 함수
-def op_processor(data, indent):
+def op_processor(data, indent):  # TODO: 조사 스플릿 시스템 구축되면 기본 기능으로 대체
     data = re.split("에서|에|을|를", data)  # (변수)[에/에서] (값)[을/를] [더하기/빼기/곱하기/나누기]
 
     data[0] = data[0].strip()
@@ -26,7 +48,7 @@ def op_processor(data, indent):
     return result
 
 # if 문 처리 함수
-def if_processor(data, indent): # TODO : 만약 결과가 '0이면'의 꼴 지원하게 수정 [ 만약 변수가 값보다 상태(하)면, 만약 변수가 값이면, (+) 만약 변수가 값이 아니면? ]
+def if_processor(data, indent):
     data = data.split()
 
     # elif 구분용 카운터
@@ -80,5 +102,5 @@ def loopcnt(indent):
 
 if __name__ == "__main__":
     import sys
-    print("이 파일은 모듈로써, 독립실행될 수 없습니다. 변환이 목적이시라면, AraCompiler.py를 사용하세요.")
+    print("이 파일은 모듈로써, 독립실행될 수 없습니다. 변환이 목적이시라면, ara 명령어를 사용하세요.")
     sys.exit(1)
