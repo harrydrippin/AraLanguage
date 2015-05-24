@@ -35,8 +35,8 @@ def main():
 
     # 언어별로 변환 : 엔진 연계
     try:
-        import Pyengine
-        py_code = Pyengine.convert(araCode)
+        import Newengine
+        py_code = Newengine.convert(araCode)
         f.close()
     except Exception as e:
         print("[-] 예기치 못한 오류가 발생했습니다. 다시 시도하시거나, 에러 내용을 문의해주세요.")
