@@ -28,7 +28,8 @@ def convert(araCode):
         r_repeatForever = data.find("무한 반복하기")
         r_stopRepeat = data.find("반복 그만하기")
         r_if = data.find("만약")
-        r_elif = data.find("그렇지 않고 만약")
+        r_for = data.find("넣어가며 반복하기")
+        r_elif = data.find("아니고 만약")
         r_else = data.find("아니면")
         r_def = data.find("함수")
         r_defstop = data.find("함수 끝내기")
@@ -36,7 +37,6 @@ def convert(araCode):
 
         # TODO: 범위에서 반복을 컴파일하지 않음 : 추가 필요
         # TODO: input에서 타입 지정을 한글로 그대로 출력 : 처리 필요
-        # TODO: 치명적인 오류 : elif를 error로 처리함 : re.split()으로 다시 구성 필요
 
         # 단순 명령어, 개행, 주석 걸러내서 치환
         if r_repeatNum != -1:
@@ -51,6 +51,10 @@ def convert(araCode):
             a = if_processor(data, indent)
         elif r_else != -1:
             a = data.replace("아니면", "else")
+        elif r_for != -1:
+            a = data.replace("범위", "range")
+            a = re.split("[을|를]|에", a)
+            a = ("\t" * indent) + "for " + a[1].strip() + " in " + a[0].strip() + ":\n"
         elif r_defstop != -1:
             a = data.replace("함수 끝내기", "return")
         elif r_def != -1:
@@ -92,7 +96,6 @@ def convert(araCode):
             dest = "_NON_"
             value = []
 
-            print(data)
             # 3차 분석 : 인자 분석과 의미 분별 : v1=목적, v2=도구, v3=입력타입
             for piece in data:
                 if piece[-2:] == "에서":
@@ -137,7 +140,7 @@ def convert(araCode):
             elif oper == "나":
                 a = f_div.format(dest=dest, value=value[0])
             elif oper == "입":
-                print(value)
+                value[2] = value[2].replace("정수", "int").replace("소수", "float").replace("문자열", "str").replace("긴정수", "long")
                 a = f_input.format(dest=value[0], value=value[1], type=value[2])
             else:
                 pass  # 명령어 에러
@@ -145,54 +148,63 @@ def convert(araCode):
         # 후처리 : 문자열 재 치환 : result로 내보내기
         a = a.replace("글자(", "str(")
         a = a.replace("__string__", string)
+        a = a.replace("범위(", "range(")
         result.append(a)
 
     return result
 
 # if 문 처리 함수
-def if_processor(data, indent):
+def if_processor(data, indent):  # 만약 변수이(가) 값(이)면 / 만약 변수이(가) 값이(가) 아니면 / 만약 변수이(가) 상태 이상/이하/초과/미만(이)면
+
+    data = data.replace("아니고 만약", "elif").replace("만약", "if").replace("아니면", "else")
+    data = data.replace(":", "")
+
+    if data.find("else") != -1:
+        return ("\t" * indent) + "else:\n"
+
     data = data.split()
+    data[1] = data[1].replace(data[1][-1:], "")
+    print(data)
+    if_type = -1
 
-    # elif 구분용 카운터
-    i = 0
-
-    if data[0].find("그렇지") != -1:
-        i = 2
-
-    if len(data) == 4:  # 만약 변수가 값보다 상태하면
-        # 변수
-        data[i + 1] = data[i + 1][:-1]
-
-        # 값 (와, 과, 보다)
-        if data[i + 2][-1:].find("와") >= 0:
-            data[i + 2] = data[i + 2][:-1]
-        elif data[i + 2][-1:].find("과") >= 0:
-            data[i + 2] = data[i + 2][:-1]
-        elif data[i + 2][-2:].find("보다") >= 0:
-            data[i + 2] = data[i + 2][:-2]
+    if len(data) == 3:
+        if data[2][-2:] == "이면":
+            data[2] = data[2].replace(data[2][-2:], "")
         else:
-            pass
-
-        # (조건) (이, 으, 르)면
-        data[i + 3] = data[i + 3].replace(":", "").replace("이면", "").replace("으면", "").replace("르면", "").replace("면", "")
-        data[i + 3] = data[i + 3].replace("이상", ">=").replace("이하", "<=").replace("초과", ">").replace("크", ">").replace("미만", "<").replace("작", "<").replace("같", "==").replace("다", "!=")
-
-        if i == 2:
-            result = ("\t" * indent) + "elif " + data[i + 1] + " " + data[i + 3] + " " + data[i + 2] + ":\n"
-        else:
-            result = ("\t" * indent) + "if " + data[1] + " " + data[3] + " " + data[2] + ":\n"
-        return result
-    elif len(data) == 3 or len(data) == 5:  # 만약 변수가 값이면
-        result = (data[i] + data[i + 1]).replace("이", " == ").replace("가", " == ").replace("만약", "").replace("그렇지않고", "")
-        data[i + 2] = data[i + 2].replace("이면", "").replace("면", "")
-
-        if i == 2:
-            result = ("\t" * indent) + "elif " + result + data[i + 2] + "\n"
-        else:
-            result = ("\t" * indent) + "if " + result + data[i + 2] + "\n"
-        return result
+            data[2] = data[2].replace(data[2][-1:], "")
+        if_type = 1  # 3자리 : 만약 변수가 값이면
     else:
-        return "error\n"
+        if data[3] == "아니면":
+            data[2] = data[2].replace(data[2][:-1], "")
+            if_type = 2  # 4자리 : 만약 변수가 값이 아니면
+        else:
+            if data[3][-2:] == "이면":
+                print("triggered")
+                data[3] = data[3].replace(data[3][-2:], "")
+            else:
+                data[3] = data[3].replace(data[3][-1:], "")
+            if_type = 3  # 4자리 : 만약 변수가 상태 조건이면
+
+    if if_type == 1:
+        result = data[0] + " " + data[1] + " == " + data[2]
+    elif if_type == 2:
+        result = data[0] + " " + data[1] + " != " + data[2]
+    elif if_type == 3:
+        result = data[0] + " " + data[1] + " " + data[3] + " " + data[2]
+        result = result.replace("이상", ">=").replace("이하", "<=").replace("초과", ">").replace("미만", "<")
+    else:
+        pass  # 에러 출력
+
+    result = ("\t" * indent) + result + ":\n"
+    return result;
+
+
+
+
+
+
+
+
 
 # 반복문 카운터 처리
 def loopcnt(indent):
