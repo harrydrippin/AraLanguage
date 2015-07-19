@@ -13,7 +13,9 @@
     <![endif]-->
     <link rel="stylesheet" href="codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="codemirror/theme/mbo.css">
+    <link rel="stylesheet" href="codemirror/theme/eclipse.css">
     <script src="codemirror/lib/codemirror.js"></script>
+    <script src="codemirror/mode/python/python.js"></script>
     <style type="text/css">
       body {
         padding-top: 50px;
@@ -67,8 +69,8 @@
         </div>
         <div class="panel-body">
           이곳에서는 웹 상에서 여러분들이 아라 코드를 작성하고 Python으로 바꾸는 작업을 할 수 있습니다.<br>
-          바로 실행해보고 싶으시다면, <a target="_blank" href="http://goo.gl/DKzJDk">여기를 참조하십시오.</a><br>
-          변환된 코드를 복사하여 각자의 컴퓨터에서 실행하는 것도 가능합니다!
+          바로 실행해보고 싶으시다면, <a target="_blank" href="http://goo.gl/DKzJDk">여기를 참조하십시오.</a> (<code>보여주기</code> 명령에서 한글 출력이 안됩니다.)<br>
+          변환된 코드를 복사하여 각자의 컴퓨터에서 실행하는 방법을 추천드립니다. (한글 정상 출력)
         </div>
       </div>
       <div class="alert alert-warning alert-dismissible" role="alert">
@@ -83,13 +85,12 @@
 둘째에 20을 넣기
 합에 첫째 + 둘째를 넣기
 
-합을 보여주기
-아라</textarea>
+합을 보여주기</textarea>
           </form>
         </div>
         <div class="others col-md-4">
-          <h4>변환된 코드 : </h4>
-          <h5 id="printer">코드를 입력하시고 변환해주세요</h5>
+          <h3>변환된 코드 : </h3>
+          <textarea id="printer" name="printer"># 코드를 입력하시고 변환해주세요</textarea>
         </div>
       </div>
     </div>
@@ -102,6 +103,16 @@
         indentUnit: 4,
         viewportMargin: Infinity,
         theme: "mbo"
+      });
+      
+      var pycode_print = CodeMirror.fromTextArea(document.getElementById("printer"), {
+        mode: {name: "python",
+               version: 3,
+               singleLineStringErrors: false},
+        lineNumbers: true,
+        indentUnit: 4,
+        viewportMargin: Infinity,
+        theme: "eclipse"
       });
       
       String.prototype.repeat = function( num )
@@ -125,8 +136,11 @@
         for (var i in araCode) {
             var data = araCode[i];
             var str = "";
-    
-            data = data.replace("&nbsp;&nbsp;&nbsp;&nbsp;", "\t");
+            
+            while(data.indexOf("    ") > -1) {
+              data = data.replace("    ", "\t");
+            }
+            
             var re = new RegExp("\t", "ig");
             var resultArray = data.match(re);
             var indent = 0;
@@ -174,11 +188,11 @@
             }
             else if (r_print != -2) {
                 a = data.replace("을 보여주기", '').replace("를 보여주기", '').replace("을 출력하기", "").replace("를 출력하기", "").replace("\n", " ");
-                a = ("&nbsp;&nbsp;&nbsp;&nbsp;".repeat(indent)) + "print(" + a.replace("\t", '').trim() + ")<br>";
+                a = ("\t".repeat(indent)) + "print(" + a.replace("\t", '').trim() + ")";
             }
             else if (r_repeatNum != -1) {
                 a = data.replace("번 반복하기", "").replace("\t", "").replace("\n", "");
-                a = ("&nbsp;&nbsp;&nbsp;&nbsp;".repeat(indent)) + loopcnt(indent) + " = 0<br>" + ("&nbsp;&nbsp;&nbsp;&nbsp;".repeat(indent)) + "while " + loopcnt(indent) + " < " + a + "<br>" + ("&nbsp;&nbsp;&nbsp;&nbsp;".repeat(indent)) + "&nbsp;&nbsp;&nbsp;&nbsp;" + loopcnt(indent) + " = " + loopcnt(indent) + " + 1";
+                a = ("\t".repeat(indent)) + loopcnt(indent) + " = 0\n" + ("\t".repeat(indent)) + "while " + loopcnt(indent) + " < " + a + "\n" + ("\t".repeat(indent)) + "\t" + loopcnt(indent) + " = " + loopcnt(indent) + " + 1";
             }
             else if (r_repeatForever != -1) {
                 a = data.replace("무한 반복하기", "while True");
@@ -194,12 +208,12 @@
             }
             else if (r_import != -1) {
                 a = data.split(" ");
-                a = ("&nbsp;&nbsp;&nbsp;&nbsp;".repeat(indent)) + "import " + a[0];
+                a = ("\t".repeat(indent)) + "import " + a[0];
             }
             else if (r_for != -1) {
                 a = data.replace("범위", "range");
                 var splitted_a = a.split(/[을|를]|에/);
-                a = ("&nbsp;&nbsp;&nbsp;&nbsp;".repeat(indent)) + "for " + splitted_a[1].replace(/\s+/g, '') + " in " + splitted_a[0].replace(/\s+/g, '') + ":<br>";
+                a = ("\t".repeat(indent)) + "for " + splitted_a[1].replace(/\s+/g, '') + " in " + splitted_a[0].replace(/\s+/g, '') + ":\n";
             }
             else if (r_defstop != -1) {
                 a = data.replace("함수 끝내기", "return");
@@ -215,9 +229,10 @@
         } // for
     var pyCode = "";
     for(var i in result) {
-      pyCode = pyCode + result[i] + "<br>";
+      pyCode = pyCode + result[i] + "\n";
     }
-    document.getElementById("printer").innerHTML = pyCode;
+    pyCode = pyCode.trim();
+    pycode_print.setValue(pyCode);
     
     } // func
     
@@ -227,7 +242,7 @@
       data[0] = data[0].trim();
       data[1] = data[1].trim();
       data[2] = data[2].replace("더하기", "+=").replace("빼기", "-=").replace("곱하기", "*=").replace("나누기", "/=").trim();
-      result = ("&nbsp;&nbsp;&nbsp;&nbsp;".repeat(indent)) + data[0] + " " + data[2] + " " + data[1];
+      result = ("\t".repeat(indent)) + data[0] + " " + data[2] + " " + data[1];
       return result;
     }
     
@@ -240,7 +255,7 @@
         }
     
         if (data.indexOf("else") != -1) {
-            return ("&nbsp;&nbsp;&nbsp;&nbsp;".repeat(indent)) + "else:";
+            return ("\t".repeat(indent)) + "else:";
         }
     
         data = data.split(" ");
@@ -293,7 +308,7 @@
             
         }
     
-        result = ("&nbsp;&nbsp;&nbsp;&nbsp;".repeat(indent)) + result + ":";
+        result = ("\t".repeat(indent)) + result + ":";
         return result;
     }
     </script>
