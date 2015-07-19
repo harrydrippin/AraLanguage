@@ -43,14 +43,12 @@ def convert(araCode):
 
         # Turtle Graphics 설정
         rt_decl = data.find("거북이 등장") # 홍승환 거북이 등장
-        rt_forward = data.find("앞으로") # 홍승환 거북이 3만큼 앞으로
-        rt_backward = data.find("뒤로") # 홍승환 거북이 3만큼 뒤로
-        rt_left = data.find("좌회전") # 홍승환 거북이 좌회전
-        rt_right = data.find("우회전") # 홍승환 거북이 우회전
-        rt_turn = data.find("뒤돌아") # 홍승환 거북이 뒤돌아
-
-        # TODO: 범위에서 반복을 컴파일하지 않음 : 추가 필요
-        # TODO: input에서 타입 지정을 한글로 그대로 출력 : 처리 필요
+        rt_forward = data.find("앞으로") # 홍승환 3만큼 앞으로
+        rt_backward = data.find("뒤로") # 홍승환 3만큼 뒤로
+        rt_left = data.find("좌회전") # 홍승환 좌회전
+        rt_right = data.find("우회전") # 홍승환 우회전
+        rt_leftturn = data.find("왼쪽으로") # 홍승환 왼쪽으로 90도 회전
+        rt_rightturn = data.find("오른쪽으로") # 홍승환 오른쪽으로 90도 회전
 
         # 단순 명령어, 개행, 주석 걸러내서 치환
         if r_repeatNum != -1:
@@ -86,11 +84,11 @@ def convert(araCode):
             is_turtle = True
         elif rt_forward != -1:
             a = data.split()
-            a[2] = a[2].replace("만큼", "")
-            a = ("\t" * indent) + a[0] + ".forward(" + a[2] + ")\n"
+            a[1] = a[1].replace("만큼", "")
+            a = ("\t" * indent) + a[0] + ".forward(" + a[1] + ")\n"
         elif rt_backward != -1:
             a = data.split()
-            a[2] = a[2].replace("만큼", "")
+            a[1] = a[1].replace("만큼", "")
             a = ("\t" * indent) + a[0] + ".backward(" + a[2] + ")\n"
         elif rt_left != -1:
             a = data.split()
@@ -98,9 +96,12 @@ def convert(araCode):
         elif rt_right != -1:
             a = data.split()
             a = ("\t" * indent) + a[0] + ".right(90)\n"
-        elif rt_turn != -1:
+        elif rt_leftturn != -1:
             a = data.split()
-            a = ("\t" * indent) + a[0] + ".right(180)\n"
+            a = ("\t" * indent) + a[0] + ".left(" + a[2].replace("도", "") + ")\n"
+        elif rt_rightturn != -1:
+            a = data.split()
+            a = ("\t" * indent) + a[0] + ".right(" + a[2].replace("도", "") + ")\n"
         else:
             # 공백을 기준으로 나누어 리스트로 변환
             data = data.split()
