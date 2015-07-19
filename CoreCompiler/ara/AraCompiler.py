@@ -8,7 +8,7 @@ __author__ = 'Seunghwan Hong'
 def convert(araCode):
     result = []
     result.append("# -*- coding : utf-8 -*-\n")
-    result.append("# 이 파일은 한글 프로그래밍 언어, 아라(Ara)에 의하여 작성되어진 Python 파일입니다.\n")
+    result.append("# 이 파일은 한글 프로그래밍 언어, 아라(Ara)에 의해 작성되어진 Python 파일입니다.\n")
     result.append("# NewPyengine build, beta 0.0.3\n")
     result.append("# 만들어진 시각 : " + datetime.today().strftime("%Y. %m. %d. %H:%M:%S\n\n"))
     is_turtle = False
