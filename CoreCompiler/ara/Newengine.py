@@ -9,6 +9,7 @@ def convert(araCode):
     result.append("# 이 파일은 한글 프로그래밍 언어, 아라(Ara)에 의하여 작성되어진 Python 파일입니다.\n")
     result.append("# NewPyengine build, beta 0.0.3\n")
     result.append("# 만들어진 시각 : " + datetime.today().strftime("%Y. %m. %d. %H:%M:%S\n\n"))
+    is_turtle = False
     for i in range(0, len(araCode)):
         data = araCode[i]
         string = ""
@@ -18,22 +19,33 @@ def convert(araCode):
             string = data[data.find("\""):data.rfind("\"") + 1]
             data = data.replace(string, "__string__")
 
+        if data.strip("\t").strip("\n") == "":
+            data = ""
+
         # 전처리 : 들여쓰기 처리
         data = data.replace("    ", "\t")
         indent = data.count("\t")
-        ind_prefix = "\t" * indent
 
         # 단순 명령어 선별
         r_repeatNum = data.find("번 반복하기")
         r_repeatForever = data.find("무한 반복하기")
         r_stopRepeat = data.find("반복 그만하기")
         r_if = data.find("만약")
+        r_import = data.find("불러오기")
         r_for = data.find("넣어가며 반복하기")
         r_elif = data.find("아니고 만약")
         r_else = data.find("아니면")
         r_def = data.find("함수")
         r_defstop = data.find("함수 끝내기")
-        r_jump = data == "\n"
+        r_jump = data == "\n" or data == ""
+
+        # Turtle Graphics 설정
+        rt_decl = data.find("거북이 등장") # 홍승환 거북이 등장
+        rt_forward = data.find("앞으로") # 홍승환 거북이 3만큼 앞으로
+        rt_backward = data.find("뒤로") # 홍승환 거북이 3만큼 뒤로
+        rt_left = data.find("좌회전") # 홍승환 거북이 좌회전
+        rt_right = data.find("우회전") # 홍승환 거북이 우회전
+        rt_turn = data.find("뒤돌아") # 홍승환 거북이 뒤돌아
 
         # TODO: 범위에서 반복을 컴파일하지 않음 : 추가 필요
         # TODO: input에서 타입 지정을 한글로 그대로 출력 : 처리 필요
@@ -51,6 +63,11 @@ def convert(araCode):
             a = if_processor(data, indent)
         elif r_else != -1:
             a = data.replace("아니면", "else")
+        elif r_import != -1:
+            a = data.split()
+            if a[0] == "거북이":
+                a[0] = "turtle"
+            a = ("\t" * indent) + "import " + a[0]
         elif r_for != -1:
             a = data.replace("범위", "range")
             a = re.split("[을|를]|에", a)
@@ -61,6 +78,27 @@ def convert(araCode):
             a = data.replace("함수", "def")
         elif r_jump:
             a = "\n"
+        elif rt_decl != -1:
+            a = data.split()
+            a = ("\t" * indent) + a[0] + " = turtle.Turtle()\n"
+            is_turtle = True
+        elif rt_forward != -1:
+            a = data.split()
+            a[2] = a[2].replace("만큼", "")
+            a = ("\t" * indent) + a[0] + ".forward(" + a[2] + ")\n"
+        elif rt_backward != -1:
+            a = data.split()
+            a[2] = a[2].replace("만큼", "")
+            a = ("\t" * indent) + a[0] + ".backward(" + a[2] + ")\n"
+        elif rt_left != -1:
+            a = data.split()
+            a = ("\t" * indent) + a[0] + ".left(90)\n"
+        elif rt_right != -1:
+            a = data.split()
+            a = ("\t" * indent) + a[0] + ".right(90)\n"
+        elif rt_turn != -1:
+            a = data.split()
+            a = ("\t" * indent) + a[0] + ".right(180)\n"
         else:
             # 공백을 기준으로 나누어 리스트로 변환
             data = data.split()
@@ -85,6 +123,8 @@ def convert(araCode):
                 i = 2
             else:
                 i = 1
+
+            print(data)
 
             if len(data) != i + 1:
                 while len(data) != i + 1:
@@ -118,13 +158,13 @@ def convert(araCode):
                     value.append(piece[:-2])
 
             # 포맷 정리
-            f_push = ind_prefix + "{dest} = {value}\n"
-            f_show = ind_prefix + "print({value})\n"
-            f_plus = ind_prefix + "{dest} += {value}\n"
-            f_minus = ind_prefix + "{dest} -= {value}\n"
-            f_mul = ind_prefix + "{dest} *= {value}\n"
-            f_div = ind_prefix + "{dest} /= {value}\n"
-            f_input = ind_prefix + "{dest} = {type}(input({value}))\n"
+            f_push = ("\t" * indent) + "{dest} = {value}\n"
+            f_show = ("\t" * indent) + "print({value})\n"
+            f_plus = ("\t" * indent) + "{dest} += {value}\n"
+            f_minus = ("\t" * indent) + "{dest} -= {value}\n"
+            f_mul = ("\t" * indent) + "{dest} *= {value}\n"
+            f_div = ("\t" * indent) + "{dest} /= {value}\n"
+            f_input = ("\t" * indent) + "{dest} = {type}(input({value}))\n"
 
             # 포맷
             if oper == "넣":
@@ -145,26 +185,34 @@ def convert(araCode):
             else:
                 pass  # 명령어 에러
 
+
         # 후처리 : 문자열 재 치환 : result로 내보내기
         a = a.replace("글자(", "str(")
         a = a.replace("__string__", string)
         a = a.replace("범위(", "range(")
         result.append(a)
 
+    # 후처리 : 터틀 그래픽 사용 후 화면 정지
+    if is_turtle:
+        result.append("turtle.mainloop()")
+        result.append("")
+
     return result
 
 # if 문 처리 함수
 def if_processor(data, indent):  # 만약 변수이(가) 값(이)면 / 만약 변수이(가) 값이(가) 아니면 / 만약 변수이(가) 상태 이상/이하/초과/미만(이)면
 
-    data = data.replace("아니고 만약", "elif").replace("만약", "if").replace("아니면", "else")
+    data = data.replace("아니고 만약", "elif").replace("만약", "if")
     data = data.replace(":", "")
+
+    if data.strip("\t").strip("\n") == "아니면:":
+        data = data.replace("아니면", "else")
 
     if data.find("else") != -1:
         return ("\t" * indent) + "else:\n"
 
     data = data.split()
     data[1] = data[1].replace(data[1][-1:], "")
-    print(data)
     if_type = -1
 
     if len(data) == 3:
@@ -175,12 +223,14 @@ def if_processor(data, indent):  # 만약 변수이(가) 값(이)면 / 만약 �
         if_type = 1  # 3자리 : 만약 변수가 값이면
     else:
         if data[3] == "아니면":
-            data[2] = data[2].replace(data[2][:-1], "")
+            data[2] = data[2].replace(data[2][-1:], "")
             if_type = 2  # 4자리 : 만약 변수가 값이 아니면
         else:
             if data[3][-2:] == "이면":
-                print("triggered")
                 data[3] = data[3].replace(data[3][-2:], "")
+            elif data[3] == "크면" or data[3] == "작으면": # 4자리 : 만약 변수가 상태보다 크면/작으면
+                data[2] = data[2][:-2]
+                data[3] = data[3][:-1]
             else:
                 data[3] = data[3].replace(data[3][-1:], "")
             if_type = 3  # 4자리 : 만약 변수가 상태 조건이면
@@ -190,13 +240,14 @@ def if_processor(data, indent):  # 만약 변수이(가) 값(이)면 / 만약 �
     elif if_type == 2:
         result = data[0] + " " + data[1] + " != " + data[2]
     elif if_type == 3:
+        data[3] = data[3].replace("크", ">").replace("작", "<")
         result = data[0] + " " + data[1] + " " + data[3] + " " + data[2]
         result = result.replace("이상", ">=").replace("이하", "<=").replace("초과", ">").replace("미만", "<")
     else:
         pass  # 에러 출력
 
     result = ("\t" * indent) + result + ":\n"
-    return result;
+    return result
 
 
 
