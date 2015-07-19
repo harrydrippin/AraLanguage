@@ -130,7 +130,7 @@
     </script>
     <script>
       function convert() {
-        var code = editor.getValue();
+        var code = document.getElementById("printer").innerHTML;
         var araCode = code.split("\n");
         var result = []
         for (var i in araCode) {
