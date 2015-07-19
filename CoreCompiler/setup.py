@@ -11,22 +11,19 @@ if str(sys.version_info[:1]).replace("(", "").replace(",)", "") != "3":
 setup(
     name='Ara',
     packages=['ara'],
-    version='0.0.1',
+    version='1.0.0',
     author='홍승환',
     author_email='hj332921@naver.com',
-    py_modules = ['ara.Pyengine', 'ara.Cengine'],
     entry_points = {
         'console_scripts': [
             'ara = ara.AraCompiler:main',
         ],
     },
 )
-
-print("\n[+] 관련 설정을 시작합니다.\n")
-
 if os.name == 'nt':
     print("[?] 파이썬의 설치 경로를 입력해주세요. (일반적으로 C:\Python[버전] 입니다.)")
     ins_position = input("[!] 입력 : ")
     os.system("setx PATH %PATH%;" + ins_position.strip() + "\Scripts")
+    print("[+] 완료되었습니다! 즐거운 프로그래밍 되세요 :)")
 
-print("[+] 완료되었습니다! 즐거운 프로그래밍 되세요 :)")
+
