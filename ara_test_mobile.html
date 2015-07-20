@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>아라 : 웹 테스터</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="codemirror/theme/mbo.css">
+    <link rel="stylesheet" href="codemirror/theme/eclipse.css">
+    <script src="codemirror/lib/codemirror.js"></script>
+    <script src="codemirror/mode/python/python.js"></script>
+    <style type="text/css">
+      body {
+        padding-top: 50px;
+      }
+      .start {
+        padding: 20px 0px;
+      }
+      .CodeMirror {
+        border: 1px solid #eee;
+        height: auto;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+          aria-controls="navbar">
+            <span class="sr-only">네비게이션 토글</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">아라 모바일 테스터</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="http://hj332921.github.io/AraLanguage">소개</a>
+            </li>
+            <li>
+              <a href="https://github.com/hj332921/AraLanguage/zipball/harryhong">다운로드</a>
+            </li>
+            <li>
+              <a href="https://github.com/hj332921/AraLanguage">Github에서 보기</a>
+            </li>
+          </ul>
+        </div>
+        <!--/.nav-collapse -->
+      </div>
+    </nav>
+    <div class="container">
+      <div class="start">
+              <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title">안녕하세요! 아라 모바일 테스터입니다.</h3>
+        </div>
+        <div class="panel-body">
+          이곳에서는 스마트폰에서 여러분들이 아라 코드를 작성하고 Python으로 바꾸는 작업을 할 수 있습니다.<br>
+          QPython3를 실행한 후 변환된 코드를 붙여넣기하면 실행해 볼 수 있습니다!
+        </div>
+      </div>
+      <div class="alert alert-warning alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="닫기"><span aria-hidden="true">&times;</span></button>
+        <strong>주의!</strong> 웹 환경에서는 변환 과정이 약간 불안정할 수 있습니다. 가능하다면 각자의 컴퓨터에서 변환하는 것을 추천합니다.
+      </div>
+        <div class="code-editor col-md-8" style="height: auto">
+          <button type="button" class="btn btn-success" style="width: 100%" onclick="convert();">변환하기</button>
+          <form>
+            <textarea class="form-control" rows="10" id="code" name="code">
+첫째에 10을 넣기
+둘째에 20을 넣기
+합에 첫째 + 둘째를 넣기
+
+합을 보여주기</textarea>
+          </form>
+        </div>
+        <div class="others col-md-4">
+          <h3>변환된 코드 : </h3>
+          <textarea id="printer" name="printer"># 코드를 입력하시고 변환해주세요</textarea>
+		  <h5>위 코드를 복사하여 QPython3에 붙여넣으면 실행할 수 있습니다.</h5>
+        </div>
+      </div>
+    </div>
+    <!-- /.container -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script>
+      //var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+      //  lineNumbers: true,
+      //  indentUnit: 4,
+      //  viewportMargin: Infinity,
+      //  theme: "mbo"
+      //});
+      
+      var pycode_print = CodeMirror.fromTextArea(document.getElementById("printer"), {
+        mode: {name: "python",
+               version: 3,
+               singleLineStringErrors: false},
+        lineNumbers: true,
+        indentUnit: 4,
+        viewportMargin: Infinity,
+        theme: "eclipse"
+      });
+      
+      String.prototype.repeat = function( num )
+      {
+          return new Array( num + 1 ).join( this );
+      }
+      
+      function loopcnt(indent) {
+        var loop_alphabet = "ijklmnop"
+        if (indent <= 7)
+          return loop_alphabet[indent];
+        else
+          return "__loopcnt" + indent;
+      }
+    </script>
+    <script>
+      function convert() {
+        var code = document.getElementById("code").value;
+        var araCode = code.split("\n");
+        var result = []
+        for (var i in araCode) {
+            var data = araCode[i];
+            var str = "";
+            
+            while(data.indexOf("    ") > -1) {
+              data = data.replace("    ", "\t");
+            }
+            
+            var re = new RegExp("\t", "ig");
+            var resultArray = data.match(re);
+            var indent = 0;
+            if (resultArray == null) {
+                indent = 0
+            } else {
+                indent = resultArray.length;
+            }
+    
+            var position = new Array();
+            var pos = data.indexOf("\"");
+    
+            while (pos > -1) {
+                position.push(pos);
+                pos = data.indexOf("\"", pos + 1);
+            }
+    
+            if (position.length >= 2) {
+                str = data.slice(position[0], position[position.length - 1]) + "\"";
+                data = data.replace(str, "__string__");
+            }
+    
+    
+            var r_push = data.indexOf("넣기");
+            var r_operator = data.split(" ").slice(-1).indexOf("더하기") + data.split(" ").slice(-1).indexOf("빼기") + data.split(" ").slice(-1).indexOf("곱하기") + data.split(" ").slice(-1).indexOf("나누기");
+            var r_print = data.indexOf("보여주기") + data.indexOf("출력하기");
+            var r_repeatNum = data.indexOf("번 반복하기");
+            var r_repeatForever = data.indexOf("무한 반복하기");
+            var r_stopRepeat = data.indexOf("반복 그만하기");
+            var r_if = data.indexOf("만약");
+            var r_import = data.indexOf("불러오기");
+            var r_for = data.indexOf("넣어가며 반복하기");
+            var r_elif = data.indexOf("아니고 만약");
+            var r_else = data.indexOf("아니면");
+            var r_def = data.indexOf("함수");
+            var r_defstop = data.indexOf("함수 끝내기");
+    
+            var a = "";
+               
+            if (r_push != -1) {
+                a = data.replace("에게 ", " = ").replace("에 ", " = ").replace("을 넣기", "").replace("를 넣기", "");
+            }
+            else if (r_operator != -4) {
+                a = op_processor(data, indent);
+            }
+            else if (r_print != -2) {
+                a = data.replace("을 보여주기", '').replace("를 보여주기", '').replace("을 출력하기", "").replace("를 출력하기", "").replace("\n", " ");
+                a = ("\t".repeat(indent)) + "print(" + a.replace("\t", '').trim() + ")";
+            }
+            else if (r_repeatNum != -1) {
+                a = data.replace("번 반복하기", "").replace("\t", "").replace("\n", "");
+                a = ("\t".repeat(indent)) + loopcnt(indent) + " = 0\n" + ("\t".repeat(indent)) + "while " + loopcnt(indent) + " < " + a + "\n" + ("\t".repeat(indent)) + "\t" + loopcnt(indent) + " = " + loopcnt(indent) + " + 1";
+            }
+            else if (r_repeatForever != -1) {
+                a = data.replace("무한 반복하기", "while True");
+            }
+            else if (r_stopRepeat != -1) {
+                a = data.replace("반복 그만하기", "break");
+            }
+            else if (r_if != -1 || r_elif != -1) {
+                a = if_processor(data, indent);
+            }
+            else if (r_else != -1) {
+                a = data.replace("아니면", "else");
+            }
+            else if (r_import != -1) {
+                a = data.split(" ");
+                a = ("\t".repeat(indent)) + "import " + a[0];
+            }
+            else if (r_for != -1) {
+                a = data.replace("범위", "range");
+                var splitted_a = a.split(/[을|를]|에/);
+                a = ("\t".repeat(indent)) + "for " + splitted_a[1].replace(/\s+/g, '') + " in " + splitted_a[0].replace(/\s+/g, '') + ":\n";
+            }
+            else if (r_defstop != -1) {
+                a = data.replace("함수 끝내기", "return");
+            }
+            else if (r_def != -1) {
+                a = data.replace("함수", "def");
+            }
+            
+            a = a.replace("__string__", str);
+            
+            result.push(a);
+            
+        } // for
+    var pyCode = "";
+    for(var i in result) {
+      pyCode = pyCode + result[i] + "\n";
+    }
+    pyCode = pyCode.trim();
+    pycode_print.setValue(pyCode);
+    
+    } // func
+    
+    function op_processor(data, indent) {
+      data = data.split(/에서|에|을|를/);
+  
+      data[0] = data[0].trim();
+      data[1] = data[1].trim();
+      data[2] = data[2].replace("더하기", "+=").replace("빼기", "-=").replace("곱하기", "*=").replace("나누기", "/=").trim();
+      result = ("\t".repeat(indent)) + data[0] + " " + data[2] + " " + data[1];
+      return result;
+    }
+    
+    function if_processor(data, indent) {
+        data = data.replace("아니고 만약", "elif").replace("만약", "if")
+        data = data.replace(":", "");
+        
+        if (data.trim() == "아니면:") {
+          data = data.replace("아니면", "else");
+        }
+    
+        if (data.indexOf("else") != -1) {
+            return ("\t".repeat(indent)) + "else:";
+        }
+    
+        data = data.split(" ");
+        data[1] = data[1].replace(data[1].slice(-1), "");
+        var if_type = -1;
+    
+        if (data.length == 3) {
+            if (data[2].slice(-2) == "이면") {
+                data[2] = data[2].replace(data[2].slice(-2), "");
+            }
+            else {
+                data[2] = data[2].replace(data[2].slice(-1), "");
+            }
+            if_type = 1;
+        }
+        else {
+            if (data[3] == "아니면") {
+                data[2] = data[2].replace(data[2].slice(-1), "");
+                if_type = 2;
+            }
+            else {
+                if (data[3].slice(-2) == "이면") {
+                    data[3] = data[3].replace(data[3].slice(-2), "");
+                }
+                else if (data[3] == "크면" || data[3] == "작으면") {
+                  data[2] = data[2].slice(0, data[2].length - 2)
+                  data[3] = data[3].slice(0, data[2].length - 1)
+                }
+                else {
+                    data[3] = data[3].replace(data[3].slice(-1), "");
+                }
+                if_type = 3;
+            }
+        }
+        
+        var result = "";
+    
+        if (if_type == 1) {
+            result = data[0] + " " + data[1] + " == " + data[2];
+        }
+        else if (if_type == 2) {
+            result = data[0] + " " + data[1] + " != " + data[2];
+        }
+        else if (if_type == 3) {
+            data[3] = data[3].replace("크", ">").replace("작", "<");
+            result = data[0] + " " + data[1] + " " + data[3] + " " + data[2];
+            result = result.replace("이상", ">=").replace("이하", "<=").replace("초과", ">").replace("미만", "<");
+        }
+        else {
+            
+        }
+    
+        result = ("\t".repeat(indent)) + result + ":";
+        return result;
+    }
+    </script>
+  </body>
+
+</html>
