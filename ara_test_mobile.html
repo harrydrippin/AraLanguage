@@ -273,6 +273,8 @@
             else if (rt_rightturn != -1) {
                 a = data.split(" ")
                 a = ( "\t".repeat(indent)) + a[0] + ".right(" + a[2].replace("도", "") + ")";
+            } else {
+            	a = data;
             }
             
             if (a.indexOf("참") + a.indexOf("거짓") != -2) {
