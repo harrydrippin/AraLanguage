@@ -7,7 +7,7 @@ __author__ = 'Seunghwan Hong'
 
 def convert(araCode):
     result = []
-    result.append("# -*- coding : utf-8 -*-\n")
+    result.append("# -*- coding: utf-8 -*-\n")
     result.append("# 이 파일은 한글 프로그래밍 언어, 아라(Ara)에 의해 작성되어진 Python 파일입니다.\n")
     result.append("# NewPyengine build, beta 0.0.3\n")
     result.append("# 만들어진 시각 : " + datetime.today().strftime("%Y. %m. %d. %H:%M:%S\n\n"))
@@ -16,17 +16,28 @@ def convert(araCode):
         data = araCode[i]
         string = ""
 
+        r_comment = -1
+        comment = ""
+
+        # 전처리 : 들여쓰기 처리
+        data = data.replace("    ", "\t")
+        indent = data.count("\t")
+
+        # 전처리 : 주석 판단
+        if data.find("#") == 0:
+            r_comment = 1
+
         # 전처리 : 문자열 치환
         if data.find("\"") + data.rfind("\"") != -2:
             string = data[data.find("\""):data.rfind("\"") + 1]
             data = data.replace(string, "__string__")
 
+        if data.find("#") != -1:
+            comment = data[data.find("#"):]
+            data = data[0:data.find("#")]
+
         if data.strip("\t").strip("\n") == "":
             data = ""
-
-        # 전처리 : 들여쓰기 처리
-        data = data.replace("    ", "\t")
-        indent = data.count("\t")
 
         # 단순 명령어 선별
         r_repeatNum = data.find("번 반복하기")
@@ -43,15 +54,17 @@ def convert(araCode):
 
         # Turtle Graphics 설정
         rt_decl = data.find("거북이 등장") # 홍승환 거북이 등장
-        rt_forward = data.find("앞으로") # 홍승환 거북이 3만큼 앞으로
-        rt_backward = data.find("뒤로") # 홍승환 거북이 3만큼 뒤로
-        rt_left = data.find("좌회전") # 홍승환 거북이 좌회전
-        rt_right = data.find("우회전") # 홍승환 거북이 우회전
+        rt_forward = data.find("앞으로") # 홍승환 3만큼 앞으로
+        rt_backward = data.find("뒤로") # 홍승환 3만큼 뒤로
+        rt_left = data.find("좌회전") # 홍승환 좌회전
+        rt_right = data.find("우회전") # 홍승환 우회전
         rt_leftturn = data.find("왼쪽으로") # 홍승환 왼쪽으로 90도 회전
         rt_rightturn = data.find("오른쪽으로") # 홍승환 오른쪽으로 90도 회전
 
         # 단순 명령어, 개행, 주석 걸러내서 치환
-        if r_repeatNum != -1:
+        if r_comment == 1:
+            a = data
+        elif r_repeatNum != -1:
             a = data.replace("번 반복하기", "").replace("\t", "").replace("\n", "")
             a = ("\t" * indent) + loopcnt(indent) + " = 0\n" + ("\t" * indent) + "while " + loopcnt(indent) \
                 + " < " + a + "\n" + ("\t" * indent) + "\t" + loopcnt(indent) + " = " + loopcnt(indent) + " + 1\n"
@@ -84,11 +97,11 @@ def convert(araCode):
             is_turtle = True
         elif rt_forward != -1:
             a = data.split()
-            a[2] = a[2].replace("만큼", "")
-            a = ("\t" * indent) + a[0] + ".forward(" + a[2] + ")\n"
+            a[1] = a[1].replace("만큼", "")
+            a = ("\t" * indent) + a[0] + ".forward(" + a[1] + ")\n"
         elif rt_backward != -1:
             a = data.split()
-            a[2] = a[2].replace("만큼", "")
+            a[1] = a[1].replace("만큼", "")
             a = ("\t" * indent) + a[0] + ".backward(" + a[2] + ")\n"
         elif rt_left != -1:
             a = data.split()
@@ -186,11 +199,18 @@ def convert(araCode):
             else:
                 pass  # 명령어 에러
 
+        if a.find("참") + a.find("거짓") != -2:
+            a = a.replace("참", "True").replace("거짓", "False")
 
         # 후처리 : 문자열 재 치환 : result로 내보내기
         a = a.replace("글자(", "str(")
         a = a.replace("__string__", string)
         a = a.replace("범위(", "range(")
+
+        # 후처리 : 주석 붙이기
+        if comment != "":
+            a = a.strip("\n") + " " + comment + "\n"
+
         result.append(a)
 
     # 후처리 : 터틀 그래픽 사용 후 화면 정지
@@ -226,6 +246,10 @@ def if_processor(data, indent):  # 만약 변수이(가) 값(이)면 / 만약 �
         if data[3] == "아니면":
             data[2] = data[2].replace(data[2][-1:], "")
             if_type = 2  # 4자리 : 만약 변수가 값이 아니면
+        elif len(data) == 5: # 5자리 : 만약 변수가 값보다 크/작거나 같으면
+            if_type = 4
+            data[2] = data[2][:-2]
+            data[3] = data[3][:-2]
         else:
             if data[3][-2:] == "이면":
                 data[3] = data[3].replace(data[3][-2:], "")
@@ -242,8 +266,10 @@ def if_processor(data, indent):  # 만약 변수이(가) 값(이)면 / 만약 �
         result = data[0] + " " + data[1] + " != " + data[2]
     elif if_type == 3:
         data[3] = data[3].replace("크", ">").replace("작", "<")
+        result = data[0] + " " + data[1] + " " + data[3].replace("이상", ">=").replace("이하", "<=").replace("초과", ">").replace("미만", "<") + " " + data[2]
+    elif if_type == 4:
+        data[3] = data[3].replace("크", ">=").replace("작", "<=")
         result = data[0] + " " + data[1] + " " + data[3] + " " + data[2]
-        result = result.replace("이상", ">=").replace("이하", "<=").replace("초과", ">").replace("미만", "<")
     else:
         pass  # 에러 출력
 
@@ -268,6 +294,7 @@ def main():
     args = p.parse_args()
     infile = args.arafile
     outfile = args.output
+    dontrun = args.dontrun
 
     # 아라 파일 오픈 (.ara) 혹은 인코딩 에러 catch 후 수정
     try:
@@ -309,11 +336,15 @@ def main():
         print("[-] 예기치 못한 오류가 발생했습니다. 다시 시도하시거나, 에러 내용을 문의해주세요.")
         print("[-] 에러 명세 : " + str(e))
         sys.exit(5)
-    print("[*] 실행 결과 : \n")
-    if os.name != "nt":
-        os.system("python3 " + outfile_path)
+
+    if dontrun:
+        print("[*] 실행 결과 : \n")
+        if os.name != "nt":
+            os.system("python3 " + outfile_path)
+        else:
+            os.system("python " + outfile_path)
     else:
-        os.system("python " + outfile_path)
+        print("[*] 변환이 완료되었습니다.\n")
     sys.exit(1)
 
 main()
