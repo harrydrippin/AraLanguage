@@ -78,7 +78,7 @@
         <div class="code-editor col-md-8" style="height: auto">
           <button type="button" class="btn btn-success" style="width: 100%" onclick="convert();">변환하기</button>
           <form>
-            <textarea class="form-control" rows="10" id="code" name="code">
+            <textarea rows="10" id="code" name="code">
 첫째에 10을 넣기
 둘째에 20을 넣기
 합에 첫째 + 둘째를 넣기
@@ -96,12 +96,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script>
-      //var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
-      //  lineNumbers: true,
-      //  indentUnit: 4,
-      //  viewportMargin: Infinity,
-      //  theme: "mbo"
-      //});
+      var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        indentUnit: 4,
+        viewportMargin: Infinity,
+        theme: "mbo"
+      });
       
       var pycode_print = CodeMirror.fromTextArea(document.getElementById("printer"), {
         mode: {name: "python",
@@ -128,7 +128,7 @@
     </script>
     <script>
       function convert() {
-        var code = document.getElementById("code").value;
+        var code = editor.getValue();
         var araCode = code.split("\n");
         var result = []
         for (var i in araCode) {
