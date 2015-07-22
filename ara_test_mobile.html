@@ -127,16 +127,24 @@
       }
     </script>
     <script>
-      function convert() {
+       function convert() {
         var code = document.getElementById("code").value;
         var araCode = code.split("\n");
         var result = []
+        var is_turtle = false;
         for (var i in araCode) {
             var data = araCode[i];
             var str = "";
             
+            var r_comment = -1;
+            var comment = "";
+            
             while(data.indexOf("    ") > -1) {
               data = data.replace("    ", "\t");
+            }
+            
+            if(data.indexOf("#") == 0) {
+              r_comment = 1;
             }
             
             var re = new RegExp("\t", "ig");
@@ -160,7 +168,12 @@
                 str = data.slice(position[0], position[position.length - 1]) + "\"";
                 data = data.replace(str, "__string__");
             }
-    
+            
+            if (data.indexOf("#") != -1) {
+                comment = data.slice(data.indexOf("#"), data.length);
+                data = data.slice(0, data.indexOf("#"));
+            }
+            
     
             var r_push = data.indexOf("넣기");
             var r_operator = data.split(" ").slice(-1).indexOf("더하기") + data.split(" ").slice(-1).indexOf("빼기") + data.split(" ").slice(-1).indexOf("곱하기") + data.split(" ").slice(-1).indexOf("나누기");
@@ -175,6 +188,14 @@
             var r_else = data.indexOf("아니면");
             var r_def = data.indexOf("함수");
             var r_defstop = data.indexOf("함수 끝내기");
+            
+            var rt_decl = data.indexOf("거북이 등장");
+            var rt_forward = data.indexOf("앞으로");
+            var rt_backward = data.indexOf("뒤로");
+            var rt_left = data.indexOf("좌회전");
+            var rt_right = data.indexOf("우회전");
+            var rt_leftturn = data.indexOf("왼쪽으로");
+            var rt_rightturn = data.indexOf("오른쪽으로");
     
             var a = "";
                
@@ -206,6 +227,9 @@
             }
             else if (r_import != -1) {
                 a = data.split(" ");
+                if(a[0] == "거북이") {
+                  a[0] = "turtle";
+                }
                 a = ("\t".repeat(indent)) + "import " + a[0];
             }
             else if (r_for != -1) {
@@ -219,16 +243,66 @@
             else if (r_def != -1) {
                 a = data.replace("함수", "def");
             }
+            else if (rt_decl != -1) {
+                var b = data.split(" ");
+                a = ("\t".repeat(indent)) + b[0] + " = turtle.Turtle()";
+                is_turtle = true;
+            }
+            else if (rt_forward != -1) {
+                a = data.split(" ");
+                a[1] = a[1].replace("만큼", "");
+                a = ( "\t".repeat(indent)) + a[0] + ".forward(" + a[1] + ")";
+            }
+            else if (rt_backward != -1) {
+                a = data.split(" ");
+                a[1] = a[1].replace("만큼", "");
+                a = ( "\t".repeat(indent)) + a[0] + ".backward(" + a[1] + ")";
+            }
+            else if (rt_left != -1) {
+                a = data.split(" ");
+                a = ( "\t".repeat(indent)) + a[0] + ".left(90)";
+            }
+            else if (rt_right != -1) {
+                a = data.split(" ");
+                a = ( "\t".repeat(indent)) + a[0] + ".right(90)";
+            }
+            else if (rt_leftturn != -1) {
+                a = data.split(" ");
+                a = ( "\t".repeat(indent)) + a[0] + ".left(" + a[2].replace("도", "") + ")";
+            }
+            else if (rt_rightturn != -1) {
+                a = data.split(" ")
+                a = ( "\t".repeat(indent)) + a[0] + ".right(" + a[2].replace("도", "") + ")";
+            }
+            
+            if (a.indexOf("참") + a.indexOf("거짓") != -2) {
+                a = a.replace("참", "True").replace("거짓", "False");
+            }
             
             a = a.replace("__string__", str);
+            a = a.replace("글자(", "str(");
+            a = a.replace("범위(", "range(");
+            
+            if (comment != "") {
+                a = a.trim() + " " + comment;
+            }
             
             result.push(a);
             
         } // for
+        
+        
+    if (is_turtle == true) {
+        result.push("\nturtle.mainloop()");
+        result.push("");
+    }
+    
     var pyCode = "";
+    
     for(var i in result) {
       pyCode = pyCode + result[i] + "\n";
     }
+    
     pyCode = pyCode.trim();
     pycode_print.setValue(pyCode);
     
@@ -274,13 +348,18 @@
                 data[2] = data[2].replace(data[2].slice(-1), "");
                 if_type = 2;
             }
+            else if (data.length == 5) {
+                  if_type = 4;
+                  data[2] = data[2].slice(0, data[2].length - 2);
+                  data[3] = data[3].slice(0, data[3].length - 2);
+                }
             else {
                 if (data[3].slice(-2) == "이면") {
                     data[3] = data[3].replace(data[3].slice(-2), "");
                 }
                 else if (data[3] == "크면" || data[3] == "작으면") {
-                  data[2] = data[2].slice(0, data[2].length - 2)
-                  data[3] = data[3].slice(0, data[2].length - 1)
+                  data[2] = data[2].slice(0, data[2].length - 2);
+                  data[3] = data[3].slice(0, data[2].length - 1);
                 }
                 else {
                     data[3] = data[3].replace(data[3].slice(-1), "");
@@ -301,6 +380,10 @@
             data[3] = data[3].replace("크", ">").replace("작", "<");
             result = data[0] + " " + data[1] + " " + data[3] + " " + data[2];
             result = result.replace("이상", ">=").replace("이하", "<=").replace("초과", ">").replace("미만", "<");
+        }
+        else if (if_type == 4) {
+            data[3] = data[3].replace("크", ">=").replace("작", "<=");
+            result = data[0] + " " + data[1] + " " + data[3] + " " + data[2];
         }
         else {
             
