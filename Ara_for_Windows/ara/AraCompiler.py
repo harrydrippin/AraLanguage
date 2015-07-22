@@ -102,7 +102,7 @@ def convert(araCode):
         elif rt_backward != -1:
             a = data.split()
             a[1] = a[1].replace("만큼", "")
-            a = ("\t" * indent) + a[0] + ".backward(" + a[2] + ")\n"
+            a = ("\t" * indent) + a[0] + ".backward(" + a[1] + ")\n"
         elif rt_left != -1:
             a = data.split()
             a = ("\t" * indent) + a[0] + ".left(90)\n"
@@ -199,12 +199,12 @@ def convert(araCode):
             else:
                 pass  # 명령어 에러
 
-        if re.compile("참|거짓").findall(a) == "참" or re.compile("참|거짓").findall(a) == "거짓":
+        if a.find("참") + a.find("거짓") != -2:
             a = a.replace("참", "True").replace("거짓", "False")
 
         # 후처리 : 문자열 재 치환 : result로 내보내기
-        a = a.replace("글자(", "str(")
         a = a.replace("__string__", string)
+        a = a.replace("글자(", "str(")
         a = a.replace("범위(", "range(")
 
         # 후처리 : 주석 붙이기
@@ -253,7 +253,7 @@ def if_processor(data, indent):  # 만약 변수이(가) 값(이)면 / 만약 �
         else:
             if data[3][-2:] == "이면":
                 data[3] = data[3].replace(data[3][-2:], "")
-            elif data[3] == "크면" or data[3] == "작으면": # 4자리 : 만약 변수가 상태보다 크면/작으면
+            elif data[3] == "크면" or data[3] == "작으면":  # 4자리 : 만약 변수가 상태보다 크면/작으면
                 data[2] = data[2][:-2]
                 data[3] = data[3][:-1]
             else:
@@ -265,7 +265,7 @@ def if_processor(data, indent):  # 만약 변수이(가) 값(이)면 / 만약 �
     elif if_type == 2:
         result = data[0] + " " + data[1] + " != " + data[2]
     elif if_type == 3:
-        data[3] = data[3].replace("크", ">").replace("작", "<")
+        data[3] = data[3].replace("크", ">").replace("작으", "<")
         result = data[0] + " " + data[1] + " " + data[3].replace("이상", ">=").replace("이하", "<=").replace("초과", ">").replace("미만", "<") + " " + data[2]
     elif if_type == 4:
         data[3] = data[3].replace("크", ">=").replace("작", "<=")

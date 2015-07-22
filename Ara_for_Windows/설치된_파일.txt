@@ -1,4 +1,0 @@
-c:\python34\lib\site-packages\Ara-1.0.0-py3.4.egg
-C:\Python34\Scripts\ara-script.py
-C:\Python34\Scripts\ara.exe
-C:\Python34\Scripts\ara.exe.manifest
