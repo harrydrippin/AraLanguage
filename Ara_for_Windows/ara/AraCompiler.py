@@ -16,17 +16,28 @@ def convert(araCode):
         data = araCode[i]
         string = ""
 
+        r_comment = -1
+        comment = ""
+
+        # 전처리 : 들여쓰기 처리
+        data = data.replace("    ", "\t")
+        indent = data.count("\t")
+
+        # 전처리 : 주석 판단
+        if data.find("#") == 0:
+            r_comment = 1
+
         # 전처리 : 문자열 치환
         if data.find("\"") + data.rfind("\"") != -2:
             string = data[data.find("\""):data.rfind("\"") + 1]
             data = data.replace(string, "__string__")
 
+        if data.find("#") != -1:
+            comment = data[data.find("#"):]
+            data = data[0:data.find("#")]
+
         if data.strip("\t").strip("\n") == "":
             data = ""
-
-        # 전처리 : 들여쓰기 처리
-        data = data.replace("    ", "\t")
-        indent = data.count("\t")
 
         # 단순 명령어 선별
         r_repeatNum = data.find("번 반복하기")
@@ -51,7 +62,9 @@ def convert(araCode):
         rt_rightturn = data.find("오른쪽으로") # 홍승환 오른쪽으로 90도 회전
 
         # 단순 명령어, 개행, 주석 걸러내서 치환
-        if r_repeatNum != -1:
+        if r_comment == 1:
+            a = data
+        elif r_repeatNum != -1:
             a = data.replace("번 반복하기", "").replace("\t", "").replace("\n", "")
             a = ("\t" * indent) + loopcnt(indent) + " = 0\n" + ("\t" * indent) + "while " + loopcnt(indent) \
                 + " < " + a + "\n" + ("\t" * indent) + "\t" + loopcnt(indent) + " = " + loopcnt(indent) + " + 1\n"
@@ -186,11 +199,18 @@ def convert(araCode):
             else:
                 pass  # 명령어 에러
 
+        if re.compile("참|거짓").findall(a) == "참" or re.compile("참|거짓").findall(a) == "거짓":
+            a = a.replace("참", "True").replace("거짓", "False")
 
         # 후처리 : 문자열 재 치환 : result로 내보내기
         a = a.replace("글자(", "str(")
         a = a.replace("__string__", string)
         a = a.replace("범위(", "range(")
+
+        # 후처리 : 주석 붙이기
+        if comment != "":
+            a = a.strip("\n") + " " + comment + "\n"
+
         result.append(a)
 
     # 후처리 : 터틀 그래픽 사용 후 화면 정지
@@ -226,6 +246,10 @@ def if_processor(data, indent):  # 만약 변수이(가) 값(이)면 / 만약 �
         if data[3] == "아니면":
             data[2] = data[2].replace(data[2][-1:], "")
             if_type = 2  # 4자리 : 만약 변수가 값이 아니면
+        elif len(data) == 5: # 5자리 : 만약 변수가 값보다 크/작거나 같으면
+            if_type = 4
+            data[2] = data[2][:-2]
+            data[3] = data[3][:-2]
         else:
             if data[3][-2:] == "이면":
                 data[3] = data[3].replace(data[3][-2:], "")
@@ -242,8 +266,10 @@ def if_processor(data, indent):  # 만약 변수이(가) 값(이)면 / 만약 �
         result = data[0] + " " + data[1] + " != " + data[2]
     elif if_type == 3:
         data[3] = data[3].replace("크", ">").replace("작", "<")
+        result = data[0] + " " + data[1] + " " + data[3].replace("이상", ">=").replace("이하", "<=").replace("초과", ">").replace("미만", "<") + " " + data[2]
+    elif if_type == 4:
+        data[3] = data[3].replace("크", ">=").replace("작", "<=")
         result = data[0] + " " + data[1] + " " + data[3] + " " + data[2]
-        result = result.replace("이상", ">=").replace("이하", "<=").replace("초과", ">").replace("미만", "<")
     else:
         pass  # 에러 출력
 
@@ -268,6 +294,7 @@ def main():
     args = p.parse_args()
     infile = args.arafile
     outfile = args.output
+    dontrun = args.dontrun
 
     # 아라 파일 오픈 (.ara) 혹은 인코딩 에러 catch 후 수정
     try:
@@ -309,11 +336,15 @@ def main():
         print("[-] 예기치 못한 오류가 발생했습니다. 다시 시도하시거나, 에러 내용을 문의해주세요.")
         print("[-] 에러 명세 : " + str(e))
         sys.exit(5)
-    print("[*] 실행 결과 : \n")
-    if os.name != "nt":
-        os.system("python3 " + outfile_path)
+
+    if dontrun:
+        print("[*] 실행 결과 : \n")
+        if os.name != "nt":
+            os.system("python3 " + outfile_path)
+        else:
+            os.system("python " + outfile_path)
     else:
-        os.system("python " + outfile_path)
+        print("[*] 변환이 완료되었습니다.\n")
     sys.exit(1)
 
 main()

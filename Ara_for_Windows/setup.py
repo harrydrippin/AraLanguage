@@ -1,4 +1,4 @@
-from setuptools import setup
+﻿from setuptools import setup
 import os, sys
 
 print("[*] 아라(Ara) : 한글 프로그래밍 언어\n")
@@ -23,7 +23,7 @@ setup(
 if os.name == 'nt':
     print("[?] 파이썬의 설치 경로를 입력해주세요. (일반적으로 C:\Python[버전] 입니다.)")
     ins_position = input("[!] 입력 : ")
-    os.system("setx PATH %PATH%;" + ins_position.strip() + "\Scripts")
+    os.system("setx PATH \"%PATH%;" + ins_position.strip() + "\Scripts\"")
     print("[+] 완료되었습니다! 즐거운 프로그래밍 되세요 :)")
 
 
