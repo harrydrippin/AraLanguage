@@ -38,8 +38,8 @@ c에 1을 넣기
 ## 설치
 git와 Python이 이미 설치되어 있다면, 다음과 같이 명령하시면 됩니다.
 ```
-git clone https//github.com/hj332921/AraLanguage.git
-cd CoreCompiler
+git clone https//github.com/harrydrippin/AraLanguage.git
+cd [운영체제에 해당하는 폴더]
 python setup.py install
 ```
 git이 설치되어있지 않거나 무엇인지 모르시는 분들은 현재 Zip 파일과 tar.gz 파일이 준비되어 있으므로 다운받으시면 됩니다. 
